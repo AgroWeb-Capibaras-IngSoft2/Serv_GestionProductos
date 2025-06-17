@@ -5,7 +5,7 @@ class db:
     def __init__(self):
         self.dataBase = pd.DataFrame(columns=[
             "productId", "name", "description", "category", "price", "stock", "unit", "origin",
-            "createdAt", "updatedAt", "isActive"
+            "imageUrl", "createdAt", "updatedAt", "isActive"
         ])
 
     def add_product(self, product: Product):
