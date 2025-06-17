@@ -126,3 +126,9 @@ La documentación OpenAPI/Swagger está disponible en el archivo [`swagger/swagg
 - Todos los endpoints devuelven respuestas informativas y en formato JSON para errores comunes (400, 404, 415, 500).
 
 ---
+
+## Historial de Cambios
+
+[Ver historial de cambios (CHANGELOG.md)](CHANGELOG.md)
+
+---
