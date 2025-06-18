@@ -98,7 +98,7 @@ pip install flask pandas requests flasgger flask-cors
 
 ```sh
 # Crear producto (incluye todos los campos relevantes)
-curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"https://example.com/images/papa.jpg\", \"isOrganic\": true, \"isBestSeller\": false, \"freeShipping\": false, \"originalPrice\": 1500.0}"
+curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"http://localhost:5000/static/catalog/lechuga.avif\", \"isOrganic\": true, \"isBestSeller\": false, \"freeShipping\": false, \"originalPrice\": 1500.0}"
 
 # Listar todos los productos
 curl -X GET http://localhost:5000/products
@@ -121,12 +121,20 @@ La documentación OpenAPI/Swagger está disponible en el archivo [`swagger/swagg
 ## 📝 Notas
 
 - Los datos se almacenan en memoria usando pandas DataFrame (no persistentes).
-- El campo `imageUrl` permite que el frontend muestre imágenes de los productos (puede ser URL externa o base64).
+- El campo `imageUrl` permite que el frontend muestre imágenes de los productos. **Debe ser una URL absoluta** (ejemplo: `http://localhost:5000/static/catalog/lechuga.avif`) para que el frontend pueda mostrar correctamente la imagen del producto. Si el backend retorna una ruta relativa, el frontend la convierte automáticamente a una URL absoluta usando la variable de entorno correspondiente.
 - El campo `inStock` es calculado automáticamente a partir del stock.
 - El servicio está preparado para ser extendido a una base de datos real en el futuro.
 - El código sigue principios de arquitectura limpia para facilitar el mantenimiento y la escalabilidad.
 - Todos los endpoints devuelven respuestas informativas y en formato JSON para errores comunes (400, 404, 415, 500).
 - El frontend ahora consume los productos directamente desde la API, eliminando datos estáticos.
+
+---
+
+## ⚠️ Problemas conocidos
+
+- Si el campo `imageUrl` no es una URL absoluta o la imagen no existe en el backend, el frontend no podrá mostrar la imagen correctamente.
+- Si el catálogo en el frontend se queda en "Cargando productos...", revisa la conexión con el backend y el manejo del estado `loading`.
+- Los datos no son persistentes: al reiniciar el servicio, se pierden los productos registrados.
 
 ---
 

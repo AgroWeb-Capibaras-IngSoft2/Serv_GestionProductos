@@ -3,7 +3,7 @@ from flask_interface.routes import bp
 from flasgger import Swagger
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 swagger = Swagger(app, template_file='swagger/swagger.yaml')
 CORS(app, origins=["http://localhost:5173"])  # Allow CORS for the specified origin
 app.register_blueprint(bp)
