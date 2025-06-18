@@ -1,9 +1,11 @@
 from flask import Flask, jsonify
 from flask_interface.routes import bp
 from flasgger import Swagger
+from flask_cors import CORS
 
 app = Flask(__name__)
 swagger = Swagger(app, template_file='swagger/swagger.yaml')
+CORS(app, origins=["http://localhost:5173"])  # Allow CORS for the specified origin
 app.register_blueprint(bp)
 
 # Aquí van los handlers globales:
@@ -24,4 +26,4 @@ def internal_error(error):
     return jsonify({"error": "Error interno del servidor"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)  # Run on port 5000 for Serv_GestionProductos

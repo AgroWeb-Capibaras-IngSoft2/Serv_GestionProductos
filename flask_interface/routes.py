@@ -15,7 +15,11 @@ def create_product():
     if not request.is_json:
         abort(415)
     data = request.get_json()
-    required_fields = ["productId", "name", "description", "category", "price", "stock", "unit", "origin", "imageUrl"]
+    required_fields = [
+    "productId", "name", "category", "price", "unit", "imageUrl", "stock",
+    "origin", "description", "isActive"
+    ]
+    # The rest (originalPrice, isOrganic, isBestSeller, freeShipping) are optional
     missing = [f for f in required_fields if f not in data]
     if missing:
         return jsonify({"error": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400

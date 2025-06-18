@@ -4,9 +4,10 @@ from domain.entidades.product_model import Product
 class db:
     def __init__(self):
         self.dataBase = pd.DataFrame(columns=[
-            "productId", "name", "description", "category", "price", "stock", "unit", "origin",
-            "imageUrl", "createdAt", "updatedAt", "isActive"
-        ])
+        "productId", "name", "category", "price", "originalPrice", "unit", "imageUrl", "stock",
+        "origin", "description", "createdAt", "updatedAt", "isActive",
+        "isOrganic", "isBestSeller", "inStock", "freeShipping"
+    ])
 
     def add_product(self, product: Product):
         if not self.dataBase[self.dataBase["productId"] == product.productId].empty:

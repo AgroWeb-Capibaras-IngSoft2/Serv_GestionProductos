@@ -12,8 +12,30 @@ class AdapterProductRepo(ProductRepository):
 
     def get_product_by_id(self, product_id: str):
         data = self.database.get_product_by_id(product_id)
+        if data and "inStock" in data:
+            del data["inStock"]
         return Product(**data) if data else None
 
     def get_all_products(self):
-        return [Product(**prod) for prod in self.database.get_all_products()]
-    
+        import math
+        def clean(prod):
+            prod = dict(prod)
+            prod.pop("inStock", None)
+            for k, v in prod.items():
+                if isinstance(v, float) and math.isnan(v):
+                    prod[k] = None
+                if v == "NaT":
+                    prod[k] = None
+            return prod
+
+        cleaned_products = []
+        for prod in self.database.get_all_products():
+            try:
+                cleaned = clean(prod)
+                p = Product(**cleaned)
+                cleaned_products.append(p)
+            except Exception as e:
+                print("Error creating Product from:", prod)
+                print("Exception:", e)
+                raise
+        return cleaned_products

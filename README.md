@@ -4,7 +4,7 @@
 
 ## 📖 Descripción General
 
-Este microservicio permite la gestión de productos del agro colombiano, permitiendo registrar, consultar y listar productos con información relevante como nombre, categoría, origen, unidad de medida, precio, stock y URL de imagen. Está diseñado bajo principios de arquitectura limpia y es fácilmente extensible para futuras integraciones (por ejemplo, bases de datos o autenticación).
+Este microservicio permite la gestión de productos del agro colombiano, permitiendo registrar, consultar y listar productos con información relevante como nombre, categoría, origen, unidad de medida, precio, stock, URL de imagen y atributos adicionales como si es orgánico, más vendido, envío gratis, precio original y disponibilidad (`inStock`). Está diseñado bajo principios de arquitectura limpia y es fácilmente extensible para futuras integraciones (por ejemplo, bases de datos o autenticación).
 
 ---
 
@@ -44,10 +44,11 @@ Serv_GestionProductos/
 - pandas
 - requests (solo para pruebas locales)
 - flasgger (para documentación Swagger en `/apidocs`)
+- flask-cors (si usas frontend separado)
 
 Instala dependencias con:
 ```
-pip install flask pandas requests flasgger
+pip install flask pandas requests flasgger flask-cors
 ```
 
 ---
@@ -96,8 +97,8 @@ pip install flask pandas requests flasgger
 ## 🧪 Ejemplos de Pruebas (curl)
 
 ```sh
-# Crear producto
-curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"https://example.com/images/papa.jpg\"}"
+# Crear producto (incluye todos los campos relevantes)
+curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"https://example.com/images/papa.jpg\", \"isOrganic\": true, \"isBestSeller\": false, \"freeShipping\": false, \"originalPrice\": 1500.0}"
 
 # Listar todos los productos
 curl -X GET http://localhost:5000/products
@@ -120,10 +121,12 @@ La documentación OpenAPI/Swagger está disponible en el archivo [`swagger/swagg
 ## 📝 Notas
 
 - Los datos se almacenan en memoria usando pandas DataFrame (no persistentes).
-- El campo `imageUrl` permite que el frontend muestre imágenes de los productos.
+- El campo `imageUrl` permite que el frontend muestre imágenes de los productos (puede ser URL externa o base64).
+- El campo `inStock` es calculado automáticamente a partir del stock.
 - El servicio está preparado para ser extendido a una base de datos real en el futuro.
 - El código sigue principios de arquitectura limpia para facilitar el mantenimiento y la escalabilidad.
 - Todos los endpoints devuelven respuestas informativas y en formato JSON para errores comunes (400, 404, 415, 500).
+- El frontend ahora consume los productos directamente desde la API, eliminando datos estáticos.
 
 ---
 

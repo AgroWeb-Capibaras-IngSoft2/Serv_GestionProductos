@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   title: Servicio de Gestión de Productos - AgroWeb
   description: API REST para registrar y consultar productos del agro colombiano.
-  version: "1.0.1"
+  version: "1.1.0"
 host: "localhost:5000"
 basePath: "/"
 schemes:
@@ -43,6 +43,11 @@ paths:
               createdAt: "2025-06-16"
               updatedAt: "2025-06-16"
               isActive: true
+              isOrganic: true
+              isBestSeller: false
+              freeShipping: false
+              originalPrice: 1500.0
+              inStock: true
         400:
           description: Error de validación o datos incompletos
           schema:
@@ -66,7 +71,8 @@ paths:
               error: "Error interno del servidor"
       x-curl-example:
         command: |
-          curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"https://example.com/images/papa.jpg\"}"
+          curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"https://example.com/images/papa.jpg\", \"isOrganic\": true, \"isBestSeller\": false, \"freeShipping\": false, \"originalPrice\": 1500.0}"
+
     get:
       summary: Listar todos los productos
       description: Devuelve una lista de todos los productos registrados.
@@ -91,18 +97,28 @@ paths:
                 createdAt: "2025-06-16"
                 updatedAt: "2025-06-16"
                 isActive: true
+                isOrganic: true
+                isBestSeller: false
+                freeShipping: false
+                originalPrice: 1500.0
+                inStock: true
               - productId: "P002"
                 name: "Mango Tommy"
                 description: "Mango dulce y jugoso"
                 category: "Fruta"
                 price: 2500.0
-                stock: 50
+                stock: 0
                 unit: "kg"
                 origin: "Tolima"
                 imageUrl: "https://example.com/images/mango.jpg"
                 createdAt: "2025-06-16"
                 updatedAt: "2025-06-16"
                 isActive: true
+                isOrganic: false
+                isBestSeller: true
+                freeShipping: true
+                originalPrice: null
+                inStock: false
         500:
           description: Error interno del servidor
           schema:
@@ -143,6 +159,11 @@ paths:
               createdAt: "2025-06-16"
               updatedAt: "2025-06-16"
               isActive: true
+              isOrganic: true
+              isBestSeller: false
+              freeShipping: false
+              originalPrice: 1500.0
+              inStock: true
         400:
           description: ID inválido
           schema:
@@ -228,6 +249,18 @@ definitions:
       imageUrl:
         type: string
         example: https://example.com/images/papa.jpg
+      isOrganic:
+        type: boolean
+        example: true
+      isBestSeller:
+        type: boolean
+        example: false
+      freeShipping:
+        type: boolean
+        example: false
+      originalPrice:
+        type: number
+        example: 1500.0
 
   Product:
     allOf:
@@ -243,6 +276,9 @@ definitions:
             format: date
             example: 2025-06-16
           isActive:
+            type: boolean
+            example: true
+          inStock:
             type: boolean
             example: true
 
