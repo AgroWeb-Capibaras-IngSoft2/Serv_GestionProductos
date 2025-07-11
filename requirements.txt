@@ -1,0 +1,15 @@
+# Core Flask dependencies
+flask>=2.0.0
+flask-cors>=3.0.0
+flasgger>=0.9.5
+
+# Database and environment
+pandas>=1.5.0
+python-dotenv>=0.19.0
+
+# Testing
+requests>=2.25.0
+
+# Cassandra driver - install separately for Python 3.13 compatibility
+# Run: pip install cassandra-driver --no-build-isolation
+# Or: conda install cassandra-driver (if using conda)
