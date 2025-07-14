@@ -1,8 +1,19 @@
 swagger: "2.0"
 info:
   title: Servicio de Gestión de Productos - AgroWeb
-  description: API REST para registrar y consultar productos del agro colombiano.
-  version: "1.1.0"
+  description: |
+    API REST para gestión de productos agrícolas colombianos con observabilidad integrada.
+    
+    **Características principales:**
+    - Auto-generación de productId con UUID
+    - Métricas de observabilidad con Prometheus
+    - Validación completa de campos
+    - Manejo robusto de errores
+    - Documentación interactiva
+  version: "1.2.0"
+  contact:
+    name: AgroWeb Team
+    url: https://github.com/AgroWeb-Capibaras-IngSoft2
 host: "localhost:5000"
 basePath: "/"
 schemes:
@@ -15,12 +26,17 @@ produces:
 paths:
   /products:
     post:
-      summary: Registrar un producto
-      description: Crea un nuevo producto del agro colombiano.
+      summary: Crear un nuevo producto
+      description: |
+        Crea un nuevo producto del agro colombiano. El **productId se auto-genera** automáticamente.
+        
+        **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive
+        
+        **Campos opcionales:** originalPrice, isOrganic, isBestSeller, freeShipping
       parameters:
         - in: body
           name: body
-          description: Datos del producto a registrar
+          description: Datos del producto a crear (productId se auto-genera)
           required: true
           schema:
             $ref: "#/definitions/ProductInput"
@@ -31,17 +47,17 @@ paths:
             $ref: "#/definitions/Product"
           examples:
             application/json:
-              productId: "P001"
+              productId: "PROD-A1B2C3D4"
               name: "Papa Pastusa"
-              description: "Papa de excelente calidad"
-              category: "Tubérculo"
+              description: "Papa de excelente calidad cultivada en Boyacá"
+              category: "vegetables"
               price: 1200.0
               stock: 100
-              unit: "kg"
+              unit: "1kg"
               origin: "Boyacá"
-              imageUrl: "https://example.com/images/papa.jpg"
-              createdAt: "2025-06-16"
-              updatedAt: "2025-06-16"
+              imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+              createdAt: "2025-07-13"
+              updatedAt: "2025-07-13"
               isActive: true
               isOrganic: true
               isBestSeller: false
@@ -54,9 +70,9 @@ paths:
             $ref: "#/definitions/Error"
           examples:
             application/json:
-              error: "Faltan campos obligatorios: name, price"
+              error: "Faltan campos obligatorios: name, category, price"
         415:
-          description: Content-Type no soportado
+          description: Content-Type no soportado (debe ser application/json)
           schema:
             $ref: "#/definitions/Error"
           examples:
@@ -71,48 +87,67 @@ paths:
               error: "Error interno del servidor"
       x-curl-example:
         command: |
-          curl -X POST http://localhost:5000/products -H "Content-Type: application/json" -d "{\"productId\": \"P001\", \"name\": \"Papa Pastusa\", \"description\": \"Papa de excelente calidad\", \"category\": \"Tubérculo\", \"price\": 1200.0, \"stock\": 100, \"unit\": \"kg\", \"origin\": \"Boyacá\", \"imageUrl\": \"https://example.com/images/papa.jpg\", \"isOrganic\": true, \"isBestSeller\": false, \"freeShipping\": false, \"originalPrice\": 1500.0}"
+          curl -X POST http://localhost:5000/products \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "Papa Pastusa",
+              "category": "vegetables", 
+              "price": 1200.0,
+              "unit": "1kg",
+              "imageUrl": "http://localhost:5000/static/catalog/papa_pastusa.jpg",
+              "stock": 100,
+              "origin": "Boyacá",
+              "description": "Papa de excelente calidad cultivada en Boyacá",
+              "isActive": true,
+              "isOrganic": true,
+              "isBestSeller": false,
+              "freeShipping": false,
+              "originalPrice": 1500.0
+            }'
 
     get:
       summary: Listar todos los productos
-      description: Devuelve una lista de todos los productos registrados.
+      description: |
+        Devuelve una lista completa de todos los productos registrados en el sistema.
+        
+        **Respuesta:** Array de objetos Product con todos los campos incluidos.
       responses:
         200:
-          description: Lista de productos
+          description: Lista de productos obtenida exitosamente
           schema:
             type: array
             items:
               $ref: "#/definitions/Product"
           examples:
             application/json:
-              - productId: "P001"
+              - productId: "PROD-A1B2C3D4"
                 name: "Papa Pastusa"
-                description: "Papa de excelente calidad"
-                category: "Tubérculo"
+                description: "Papa de excelente calidad cultivada en Boyacá"
+                category: "vegetables"
                 price: 1200.0
                 stock: 100
-                unit: "kg"
+                unit: "1kg"
                 origin: "Boyacá"
-                imageUrl: "https://example.com/images/papa.jpg"
-                createdAt: "2025-06-16"
-                updatedAt: "2025-06-16"
+                imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+                createdAt: "2025-07-13"
+                updatedAt: "2025-07-13"
                 isActive: true
                 isOrganic: true
                 isBestSeller: false
                 freeShipping: false
                 originalPrice: 1500.0
                 inStock: true
-              - productId: "P002"
+              - productId: "PROD-B5C6D7E8"
                 name: "Mango Tommy"
-                description: "Mango dulce y jugoso"
-                category: "Fruta"
+                description: "Mango dulce y jugoso de Tolima"
+                category: "fruits"
                 price: 2500.0
                 stock: 0
-                unit: "kg"
+                unit: "1kg"
                 origin: "Tolima"
-                imageUrl: "https://example.com/images/mango.jpg"
-                createdAt: "2025-06-16"
-                updatedAt: "2025-06-16"
+                imageUrl: "http://localhost:5000/static/catalog/mango.jpg"
+                createdAt: "2025-07-13"
+                updatedAt: "2025-07-13"
                 isActive: true
                 isOrganic: false
                 isBestSeller: true
@@ -133,31 +168,35 @@ paths:
   /products/{productId}:
     get:
       summary: Consultar producto por ID
-      description: Devuelve los datos de un producto específico según su ID.
+      description: |
+        Devuelve los datos de un producto específico según su ID auto-generado.
+        
+        **Formato de ID:** PROD-XXXXXXXX (donde X son caracteres alfanuméricos)
       parameters:
         - name: productId
           in: path
           required: true
           type: string
-          description: ID del producto a consultar
+          description: ID auto-generado del producto (formato PROD-XXXXXXXX)
+          pattern: "^PROD-[A-Z0-9]{8}$"
       responses:
         200:
-          description: Producto encontrado
+          description: Producto encontrado exitosamente
           schema:
             $ref: "#/definitions/Product"
           examples:
             application/json:
-              productId: "P001"
+              productId: "PROD-A1B2C3D4"
               name: "Papa Pastusa"
-              description: "Papa de excelente calidad"
-              category: "Tubérculo"
+              description: "Papa de excelente calidad cultivada en Boyacá"
+              category: "vegetables"
               price: 1200.0
               stock: 100
-              unit: "kg"
+              unit: "1kg"
               origin: "Boyacá"
-              imageUrl: "https://example.com/images/papa.jpg"
-              createdAt: "2025-06-16"
-              updatedAt: "2025-06-16"
+              imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+              createdAt: "2025-07-13"
+              updatedAt: "2025-07-13"
               isActive: true
               isOrganic: true
               isBestSeller: false
@@ -187,12 +226,82 @@ paths:
               error: "Error interno del servidor"
       x-curl-example:
         command: |
-          curl -X GET http://localhost:5000/products/P001
+          curl -X GET http://localhost:5000/products/PROD-A1B2C3D4
+
+  /health:
+    get:
+      summary: Health Check - Estado del Servicio
+      description: |
+        Endpoint de monitoreo para verificar el estado y salud del servicio.
+        
+        **Uso:** Utilizado por sistemas de monitoreo, load balancers y observabilidad.
+      responses:
+        200:
+          description: Servicio operativo y saludable
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "healthy"
+              service:
+                type: string
+                example: "productos"
+              version:
+                type: string
+                example: "1.2.0"
+              metrics_endpoint:
+                type: string
+                example: "/metrics"
+          examples:
+            application/json:
+              status: "healthy"
+              service: "productos"
+              version: "1.2.0"
+              metrics_endpoint: "/metrics"
+      x-curl-example:
+        command: |
+          curl -X GET http://localhost:5000/health
+
+  /metrics:
+    get:
+      summary: Métricas de Prometheus
+      description: |
+        Endpoint que expone métricas de observabilidad en formato Prometheus.
+        
+        **Métricas incluidas:**
+        - `agroweb_productos_requests_total` - Contador de requests HTTP
+        - `agroweb_productos_request_duration_seconds` - Histograma de latencia
+        - `flask_http_requests_total` - Métricas base de Flask
+        - `flask_http_request_duration_seconds` - Duración de requests
+        
+        **Uso:** Consumido por Prometheus para recolección de métricas.
+      produces:
+        - text/plain
+      responses:
+        200:
+          description: Métricas en formato Prometheus
+          schema:
+            type: string
+          examples:
+            text/plain: |
+              # HELP agroweb_productos_requests_total Total de peticiones al servicio de productos
+              # TYPE agroweb_productos_requests_total counter
+              agroweb_productos_requests_total{endpoint="flask_interface.routes.get_all_products",method="GET",status="200"} 1.0
+              # HELP agroweb_productos_request_duration_seconds Duración de peticiones en segundos  
+              # TYPE agroweb_productos_request_duration_seconds histogram
+              agroweb_productos_request_duration_seconds_bucket{endpoint="flask_interface.routes.get_all_products",method="GET",le="0.005"} 1.0
+      x-curl-example:
+        command: |
+          curl -X GET http://localhost:5000/metrics
 
   /test:
     get:
-      summary: Ruta de prueba
-      description: Verifica que el servicio está activo.
+      summary: Test de Conectividad
+      description: |
+        Endpoint simple para verificar que el servicio responde correctamente.
+        
+        **Uso:** Testing básico de conectividad y disponibilidad del servicio.
       responses:
         200:
           description: El servicio está activo
@@ -211,80 +320,110 @@ paths:
 definitions:
   ProductInput:
     type: object
+    description: |
+      Esquema para crear un nuevo producto. El productId se auto-genera automáticamente.
     required:
-      - productId
       - name
-      - description
-      - category
+      - category 
       - price
-      - stock
       - unit
-      - origin
       - imageUrl
+      - stock
+      - origin
+      - description
+      - isActive
     properties:
-      productId:
-        type: string
-        example: P001
       name:
         type: string
-        example: Papa Pastusa
-      description:
-        type: string
-        example: Papa de excelente calidad
+        description: Nombre del producto
+        example: "Papa Pastusa"
       category:
         type: string
-        example: Tubérculo
+        description: Categoría del producto
+        enum: ["vegetables", "fruits", "dairy", "herbs"]
+        example: "vegetables"
       price:
         type: number
+        description: Precio actual del producto en pesos colombianos
+        minimum: 0
         example: 1200.0
-      stock:
-        type: integer
-        example: 100
       unit:
         type: string
-        example: kg
-      origin:
-        type: string
-        example: Boyacá
+        description: Unidad de medida
+        example: "1kg"
       imageUrl:
         type: string
-        example: https://example.com/images/papa.jpg
+        description: URL de la imagen del producto
+        example: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+      stock:
+        type: integer
+        description: Cantidad disponible en inventario
+        minimum: 0
+        example: 100
+      origin:
+        type: string
+        description: Lugar de origen del producto
+        example: "Boyacá"
+      description:
+        type: string
+        description: Descripción detallada del producto
+        example: "Papa de excelente calidad cultivada en Boyacá"
+      isActive:
+        type: boolean
+        description: Si el producto está activo en el catálogo
+        example: true
+      # Campos opcionales
+      originalPrice:
+        type: number
+        description: Precio original antes de descuentos (opcional)
+        minimum: 0
+        example: 1500.0
       isOrganic:
         type: boolean
+        description: Si el producto tiene certificación orgánica (opcional)
         example: true
       isBestSeller:
         type: boolean
+        description: Si el producto es bestseller (opcional)
         example: false
       freeShipping:
         type: boolean
+        description: Si el producto califica para envío gratuito (opcional)
         example: false
-      originalPrice:
-        type: number
-        example: 1500.0
 
   Product:
+    type: object
+    description: |
+      Producto completo con campos auto-generados incluidos.
     allOf:
       - $ref: "#/definitions/ProductInput"
       - type: object
         properties:
+          productId:
+            type: string
+            description: ID único auto-generado del producto
+            pattern: "^PROD-[A-Z0-9]{8}$"
+            example: "PROD-A1B2C3D4"
           createdAt:
             type: string
             format: date
-            example: 2025-06-16
+            description: Fecha de creación (auto-generada)
+            example: "2025-07-13"
           updatedAt:
             type: string
             format: date
-            example: 2025-06-16
-          isActive:
-            type: boolean
-            example: true
+            description: Fecha de última actualización (auto-generada)
+            example: "2025-07-13"
           inStock:
             type: boolean
+            description: Si el producto está en stock (calculado desde stock > 0)
             example: true
 
   Error:
     type: object
+    description: Esquema para respuestas de error
     properties:
       error:
         type: string
-        example: "Producto no encontrado"
+        description: Mensaje descriptivo del error
+        example: "Error interno del servidor"

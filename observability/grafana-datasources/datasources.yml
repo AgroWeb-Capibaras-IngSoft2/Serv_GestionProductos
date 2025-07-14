@@ -1,0 +1,14 @@
+# Configuración de fuente de datos para Grafana
+# Conecta Grafana con Prometheus para visualizar métricas
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090  # URL interna del contenedor Prometheus
+    isDefault: true              # Fuente de datos por defecto
+    editable: true
+    jsonData:
+      timeInterval: "5s"         # Intervalo mínimo de consultas

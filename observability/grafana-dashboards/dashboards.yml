@@ -1,0 +1,14 @@
+# Configuración de proveedores de dashboards para Grafana
+# Define dónde encontrar los archivos de dashboard JSON
+
+apiVersion: 1
+
+providers:
+  - name: 'agroweb-dashboards'
+    orgId: 1
+    folder: 'AgroWeb'           # Carpeta en Grafana UI
+    type: file
+    disableDeletion: false      # Permite editar dashboards
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards  # Ruta interna del contenedor

@@ -1,0 +1,18 @@
+# Configuración de Prometheus para AgroWeb
+# Recolecta métricas del API de productos que corre nativamente
+
+global:
+  scrape_interval: 15s     # Frecuencia global de recolección
+  evaluation_interval: 15s
+
+rule_files:
+  # Agregar archivos de reglas de alertas aquí si es necesario
+
+scrape_configs:
+  # Configuración para el servicio de productos
+  - job_name: 'agroweb-productos'
+    static_configs:
+      - targets: ['host.docker.internal:5000']  # API nativo en puerto 5000
+    scrape_interval: 5s        # Recolección cada 5 segundos
+    metrics_path: '/metrics'   # Endpoint de métricas de Prometheus
+    scrape_timeout: 4s         # Timeout menor que el interval (5s)

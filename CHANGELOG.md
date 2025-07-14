@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## [1.2.0] - 2025-07-13
+### Added
+- **Observabilidad integrada** con Prometheus y Grafana para monitoreo en tiempo real
+- **Docker Compose** completo con Cassandra, Prometheus y Grafana orchestration
+- **Auto-generación de productId** usando UUID para mayor seguridad y escalabilidad
+- **Instrumentación de métricas** con prometheus-flask-exporter para análisis de rendimiento
+- **Dashboard preconfigurado** en Grafana "AgroWeb - Servicio de Productos"
+- **Script de demostración** `generate_observability_demo.py` para testing de métricas
+- **Endpoints de observabilidad**: `/health` y `/metrics` para monitoreo
+
+### Changed
+- **Arquitectura de datos**: ProductId ahora se auto-genera en lugar de ser requerido en requests
+- **Integración completa de infraestructura**: Cassandra, Prometheus y Grafana unificados en el servicio
+- **Configuración de entorno**: Mandatory Anaconda/conda para compatibilidad con cassandra-driver
+- **Validación de API**: Campos requeridos actualizados para reflejar auto-generación de IDs
+- **Documentación README**: Completamente reescrita con guías de observabilidad y troubleshooting
+
+### Removed
+- **Dependencia de infrastructure externa**: Todo integrado dentro del servicio productos
+- **IDs manuales**: ProductId ya no se requiere en POST requests (auto-generado)
+
+### Fixed
+- **Instrumentación de Flask**: Métricas de latencia, throughput y error rates funcionando correctamente
+- **Conectividad Docker**: Networking entre contenedores configurado apropiadamente
+- **Fallback de base de datos**: Sistema robusto de fallback pandas si Cassandra no está disponible
+
 ## [1.1.0] - 2025-06-18
 ### Changed
 - Actualización y corrección de la documentación Swagger del servicio de productos para reflejar la estructura real de los productos y los endpoints.

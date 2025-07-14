@@ -10,6 +10,9 @@ python-dotenv>=0.19.0
 # Testing
 requests>=2.25.0
 
-# Cassandra driver - install separately for Python 3.13 compatibility
-# Run: pip install cassandra-driver --no-build-isolation
-# Or: conda install cassandra-driver (if using conda)
+# Observabilidad
+prometheus-flask-exporter>=0.20.0
+
+# Cassandra driver - REQUIRED: Install with conda only
+# Run: conda install cassandra-driver -y
+# Note: pip installation not supported due to Python 3.13 compatibility issues

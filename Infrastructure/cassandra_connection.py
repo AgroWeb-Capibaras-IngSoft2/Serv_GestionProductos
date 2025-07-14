@@ -40,15 +40,19 @@ class CassandraConnection:
                     password=self.password
                 )
             
-            # Create cluster connection
+            # Create cluster connection with timeout
             self._cluster = Cluster(
                 contact_points=self.hosts,
                 port=self.port,
-                auth_provider=auth_provider
+                auth_provider=auth_provider,
+                connect_timeout=10,  # 10 second connection timeout
+                control_connection_timeout=10  # 10 second control connection timeout
             )
             
-            # Create session
+            # Create session with timeout
+            print(f"🔗 Connecting to Cassandra at {self.hosts}:{self.port}...")
             self._session = self._cluster.connect()
+            print("✅ Cassandra session established")
             
             # Create keyspace if it doesn't exist
             self._create_keyspace()
