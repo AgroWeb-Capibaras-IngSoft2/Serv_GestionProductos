@@ -1,26 +1,33 @@
 from dataclasses import dataclass, field
 from datetime import datetime, date
+import uuid
 
 @dataclass
 class Product:
-    productId: str
-    name: str
-    category: str
-    price: float
-    unit: str
-    imageUrl: str
-    stock: int
-    origin: str
-    description: str
-    originalPrice: float = None
-    createdAt: date = field(default_factory=lambda: datetime.now().date())
-    updatedAt: date = field(default_factory=lambda: datetime.now().date())
-    isActive: bool = True
-    isOrganic: bool = None
-    isBestSeller: bool = None
-    freeShipping: bool = False
-    # inStock is not expected as input!
-    inStock: bool = field(init=False, default=None)
+    # Campos requeridos en el input - Deben proporcionarse al crear un producto
+    name: str              # Nombre del producto
+    category: str          # Categoría del producto (ej: "Vegetales", "Frutas")
+    price: float           # Precio de venta actual
+    unit: str              # Unidad de medida (ej: "kg", "lb", "unidad")
+    imageUrl: str          # URL de la imagen del producto
+    stock: int             # Cantidad en inventario actual
+    origin: str            # Lugar de origen (ej: "Boyacá", "Valle del Cauca")
+    description: str       # Descripción del producto
+    
+    # Campos opcionales en el input - Pueden proporcionarse, usarán valor por defecto si no
+    originalPrice: float = None    # Precio original antes de descuentos
+    isActive: bool = True          # Si el producto está activo en el catálogo
+    isOrganic: bool = None         # Si el producto tiene certificación orgánica
+    freeShipping: bool = False     # Si el producto califica para envío gratuito
+
+    # Campos opcionales al hacer update - Pueden proporcionarse, usarán valor por defecto si no
+    isBestSeller: bool = None      # Se actualiza según rendimiento de ventas
+    
+    # Campos por defecto, generados - Se establecen automáticamente, no se esperan como input
+    productId: str = field(default_factory=lambda: f"PROD-{str(uuid.uuid4())[:8].upper()}")  # Auto-generated unique ID
+    createdAt: date = field(default_factory=lambda: datetime.now().date())    # Marca de tiempo de creación
+    updatedAt: date = field(default_factory=lambda: datetime.now().date())    # Marca de tiempo de última actualización
+    inStock: bool = field(init=False, default=None)                           # Calculado desde stock > 0
 
     def __post_init__(self):
         # Convert dates if needed
@@ -28,6 +35,10 @@ class Product:
             self.createdAt = datetime.fromisoformat(self.createdAt).date()
         if isinstance(self.updatedAt, str):
             self.updatedAt = datetime.fromisoformat(self.updatedAt).date()
+        
+        # Calculate inStock based on stock availability
+        self.inStock = self.stock > 0
+        
         # Validations
         if self.price < 0:
             raise ValueError("El precio no puede ser negativo")
@@ -35,16 +46,12 @@ class Product:
             raise ValueError("El stock no puede ser negativo")
         if not self.name:
             raise ValueError("El nombre es obligatorio")
-        if not self.productId:
-            raise ValueError("El ID es obligatorio")
         if not self.unit:
             raise ValueError("La unidad de medida es obligatoria")
         if not self.origin:
             raise ValueError("El origen es obligatorio")
         if not self.imageUrl:
             raise ValueError("La URL de la imagen es obligatoria")
-        # Always calculate inStock
-        self.inStock = self.stock > 0
 
     def toDictionary(self):
         from math import isnan

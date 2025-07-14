@@ -1,10 +1,10 @@
 from domain.repositorio.product_repo import ProductRepository
-from Infrastructure.DB import db
+from Infrastructure.cassandra_db import CassandraDB
 from domain.entidades.product_model import Product
 
 class AdapterProductRepo(ProductRepository):
     def __init__(self):
-        self.database = db()
+        self.database = CassandraDB()
 
     def add_product(self, product: Product):
         self.database.add_product(product)
@@ -35,7 +35,6 @@ class AdapterProductRepo(ProductRepository):
                 p = Product(**cleaned)
                 cleaned_products.append(p)
             except Exception as e:
-                print("Error creating Product from:", prod)
-                print("Exception:", e)
-                raise
+                # Skip invalid products and continue processing
+                continue
         return cleaned_products
