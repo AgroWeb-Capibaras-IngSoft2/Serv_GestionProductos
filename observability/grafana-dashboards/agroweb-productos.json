@@ -89,7 +89,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(flask_http_request_total[1m])) by (job)",
+          "expr": "sum(rate(flask_http_requests_total[1m])) by (job)",
           "interval": "",
           "legendFormat": "{{job}}",
           "refId": "A"
@@ -247,7 +247,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(flask_http_request_total{status=~\"4..|5..\"}[1m])) by (status)",
+          "expr": "sum(rate(flask_http_requests_total{status=~\"4..|5..\"}[1m])) by (status)",
           "interval": "",
           "legendFormat": "HTTP {{status}}",
           "refId": "A"
@@ -336,7 +336,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(flask_http_request_total[1m])) by (endpoint)",
+          "expr": "sum(rate(flask_http_requests_total[1m])) by (endpoint)",
           "interval": "",
           "legendFormat": "{{endpoint}}",
           "refId": "A"

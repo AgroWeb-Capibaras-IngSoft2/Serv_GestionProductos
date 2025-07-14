@@ -265,7 +265,7 @@ curl http://localhost:5000/products/PROD-12345678
 
 Swagger UI disponible en: http://localhost:5000/apidocs
 
-## � Monitoreo y Debugging
+## 🔍 Monitoreo y Debugging
 
 ### Logs de la Aplicación
 ```bash

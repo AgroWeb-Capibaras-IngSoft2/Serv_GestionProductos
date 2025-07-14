@@ -2,8 +2,6 @@
 Tests para endpoints de observabilidad del servicio de productos
 """
 import requests
-import json
-from unittest.mock import patch
 
 # Base URL del servicio
 BASE_URL = "http://localhost:5000"
