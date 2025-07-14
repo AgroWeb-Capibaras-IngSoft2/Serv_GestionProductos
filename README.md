@@ -159,6 +159,21 @@ python generate_observability_demo.py
 # - Grafana Dashboard: http://localhost:3001
 ```
 
+### Tests de Observabilidad
+```bash
+# Ejecutar tests automatizados para endpoints de monitoreo
+python test_observability.py
+
+# O usar pytest para testing más avanzado (requiere: pip install pytest)
+pytest test_observability.py -v
+
+# Los tests validan:
+# ✅ Endpoint /health retorna JSON con formato correcto
+# ✅ Endpoint /metrics expone métricas de Prometheus
+# ✅ Códigos de respuesta HTTP correctos
+# ✅ Estructura de datos esperada en las respuestas
+```
+
 ## 📡 Endpoints de la API
 
 ### POST `/products` - Crear Producto
