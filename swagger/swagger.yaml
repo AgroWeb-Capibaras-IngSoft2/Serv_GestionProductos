@@ -270,10 +270,10 @@ paths:
         Endpoint que expone métricas de observabilidad en formato Prometheus.
         
         **Métricas incluidas:**
-        - `agroweb_productos_requests_total` - Contador de requests HTTP
-        - `agroweb_productos_request_duration_seconds` - Histograma de latencia
-        - `flask_http_requests_total` - Métricas base de Flask
-        - `flask_http_request_duration_seconds` - Duración de requests
+        - `flask_http_requests_total` - Contador de requests HTTP
+        - `flask_http_request_duration_seconds` - Histograma de latencia
+        - `agroweb_productos_info` - Información del servicio
+        - Métricas del sistema Python (memoria, CPU, GC)
         
         **Uso:** Consumido por Prometheus para recolección de métricas.
       produces:

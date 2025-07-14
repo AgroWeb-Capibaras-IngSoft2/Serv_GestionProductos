@@ -89,9 +89,9 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(flask_http_requests_total[1m])) by (job)",
+          "expr": "sum(rate(flask_http_requests_total[1m]))",
           "interval": "",
-          "legendFormat": "{{job}}",
+          "legendFormat": "Peticiones/seg",
           "refId": "A"
         }
       ],
@@ -336,13 +336,13 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(rate(flask_http_requests_total[1m])) by (endpoint)",
+          "expr": "sum(rate(flask_http_requests_total[1m])) by (method)",
           "interval": "",
-          "legendFormat": "{{endpoint}}",
+          "legendFormat": "{{method}}",
           "refId": "A"
         }
       ],
-      "title": "🎯 Peticiones por Endpoint",
+      "title": "🎯 Peticiones por Método HTTP",
       "type": "timeseries"
     }
   ],

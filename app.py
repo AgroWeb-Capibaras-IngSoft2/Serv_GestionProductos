@@ -13,20 +13,6 @@ metrics = PrometheusMetrics(app)
 # Métricas de información del servicio
 metrics.info('agroweb_productos_info', 'Servicio de Gestión de Productos AgroWeb', version='1.2.0')
 
-# Contador de peticiones HTTP (con método, endpoint y código de estado)
-request_count = metrics.counter(
-    'agroweb_productos_requests_total', 
-    'Total de peticiones al servicio de productos',
-    labels={'method': lambda: request.method, 'endpoint': lambda: request.endpoint, 'status': lambda r: r.status_code}
-)
-
-# Histograma de latencia/duración de peticiones
-request_duration = metrics.histogram(
-    'agroweb_productos_request_duration_seconds',
-    'Duración de peticiones en segundos',
-    labels={'method': lambda: request.method, 'endpoint': lambda: request.endpoint}
-)
-
 swagger = Swagger(app, template_file='swagger/swagger.yaml')
 CORS(app, origins=["http://localhost:5173"])
 app.register_blueprint(bp)

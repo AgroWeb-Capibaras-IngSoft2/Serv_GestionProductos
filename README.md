@@ -110,16 +110,15 @@ La **observabilidad** es la capacidad de entender el estado interno de un sistem
 - **Detecta problemas** mediante reglas de alertas
 
 #### Métricas que Prometheus Registra:
-- **`agroweb_productos_requests_total`** - Contador de peticiones HTTP
+- **`flask_http_requests_total`** - Contador de peticiones HTTP
   - Labels: method, endpoint, status
   - Ejemplo: POST /products → 201, GET /products → 200
-- **`agroweb_productos_request_duration_seconds`** - Latencia de peticiones  
+- **`flask_http_request_duration_seconds`** - Latencia de peticiones  
   - Labels: method, endpoint
   - Percentiles: 50, 95, 99 (tiempo de respuesta)
-- **`flask_http_request_total`** - Métricas base de Flask
-  - Peticiones totales por endpoint
-- **`flask_http_request_duration_seconds`** - Histograma de duración
-  - Distribución de tiempos de respuesta
+- **`agroweb_productos_info`** - Información del servicio
+  - Versión, nombre del servicio
+- **Métricas del sistema Python** - Uso de memoria, CPU, GC
 
 ### 📈 Grafana - Visualización de Datos
 **Grafana** es una plataforma de visualización que:
@@ -132,7 +131,7 @@ La **observabilidad** es la capacidad de entender el estado interno de un sistem
 - **📊 Peticiones por segundo** - Tráfico del API en tiempo real
 - **⏱️ Latencia P95** - Tiempo de respuesta del 95% de peticiones
 - **❌ Errores por código HTTP** - Monitoreo de errores 4xx/5xx
-- **🎯 Distribución por endpoint** - Qué endpoints se usan más
+- **🎯 Peticiones por Método HTTP** - Distribución GET, POST, etc.
 - **Actualización:** Cada 5 segundos automáticamente
 
 ### 🔄 Flujo de Observabilidad:
@@ -278,13 +277,13 @@ Swagger UI disponible en: http://localhost:5000/apidocs
 ### Queries Útiles en Prometheus
 ```promql
 # Tasa de peticiones por segundo
-rate(flask_http_request_total[1m])
+rate(flask_http_requests_total[1m])
 
 # Latencia percentil 95
 histogram_quantile(0.95, rate(flask_http_request_duration_seconds_bucket[5m]))
 
 # Errores HTTP 4xx y 5xx
-flask_http_request_total{status=~"4..|5.."}
+flask_http_requests_total{status=~"4..|5.."}
 ```
 
 ## 🛠️ Troubleshooting
@@ -292,6 +291,10 @@ flask_http_request_total{status=~"4..|5.."}
 | Problema | Solución |
 |----------|----------|
 | **API no responde** | Verificar `conda activate agroweb` y `python app.py` ejecutándose |
+| **Grafana muestra "No data"** | El API Flask debe estar ejecutándose en puerto 5000. Verificar: `python app.py` |
+| **Solo algunos paneles con datos** | Generar tráfico: `python generate_observability_demo.py` |
+| **Grafana dashboards vacíos** | Restart Grafana: `docker-compose restart grafana` y generar tráfico |
+| **"Prometheus was not found"** | Reiniciar Grafana: `docker-compose restart grafana` |
 | **Error cassandra-driver** | Instalar con conda: `conda install cassandra-driver -y` |
 | **Prometheus sin datos** | Comprobar `host.docker.internal:5000/metrics` accesible |
 | **Grafana "datasource not found"** | Reiniciar contenedor: `docker-compose restart grafana` |
@@ -336,6 +339,6 @@ docker-compose logs cassandra
 # Acceder a CLI de Cassandra
 docker exec -it agroweb-cassandra cqlsh
 
-# Reiniciar solo Grafana
+# Reiniciar solo Grafana (si dashboards muestran "No data")
 docker-compose restart grafana
 ```

@@ -8,6 +8,7 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prometheus:9090  # URL interna del contenedor Prometheus
+    uid: prometheus              # UID que coincide con el dashboard
     isDefault: true              # Fuente de datos por defecto
     editable: true
     jsonData:
