@@ -35,6 +35,10 @@ class Product:
             self.createdAt = datetime.fromisoformat(self.createdAt).date()
         if isinstance(self.updatedAt, str):
             self.updatedAt = datetime.fromisoformat(self.updatedAt).date()
+        
+        # Calculate inStock based on stock availability
+        self.inStock = self.stock > 0
+        
         # Validations
         if self.price < 0:
             raise ValueError("El precio no puede ser negativo")

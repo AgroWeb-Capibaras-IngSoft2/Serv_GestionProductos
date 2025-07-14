@@ -9,6 +9,7 @@
 - **Dashboard preconfigurado** en Grafana "AgroWeb - Servicio de Productos"
 - **Script de demostración** `generate_observability_demo.py` para testing de métricas
 - **Endpoints de observabilidad**: `/health` y `/metrics` para monitoreo
+- **Tests automatizados** `test_observability.py` para validación de endpoints de monitoreo
 
 ### Changed
 - **Arquitectura de datos**: ProductId ahora se auto-genera en lugar de ser requerido en requests
@@ -26,6 +27,8 @@
 - **Conectividad Docker**: Networking entre contenedores configurado apropiadamente
 - **Fallback de base de datos**: Sistema robusto de fallback pandas si Cassandra no está disponible
 - **Error handling en adaptador**: Productos inválidos se omiten en lugar de detener el procesamiento
+- **Cálculo de inStock**: Campo se calcula automáticamente desde stock > 0 en __post_init__
+- **Endpoints de demo**: Removidos endpoints inválidos de filtrado por categoría (se hace en frontend)
 
 ## [1.1.0] - 2025-06-18
 ### Changed

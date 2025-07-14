@@ -42,8 +42,7 @@ def generate_productos_traffic():
         "http://localhost:5000/test",               # Endpoint de prueba
         "http://localhost:5000/health",             # Health check
         "http://localhost:5000/metrics",            # Métricas Prometheus
-        "http://localhost:5000/products/category/vegetables",  # Filtro por categoría
-        "http://localhost:5000/products/1",         # Producto específico
+        "http://localhost:5000/products/PROD-12345678",  # Producto específico (formato UUID)
         "http://localhost:5000/products/999",       # Producto inexistente (404)
         "http://localhost:5000/nonexistent",        # Endpoint inexistente (404)
     ]
