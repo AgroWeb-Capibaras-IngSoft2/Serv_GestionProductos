@@ -36,5 +36,5 @@ class AdapterProductRepo(ProductRepository):
                 cleaned_products.append(p)
             except Exception as e:
                 # Skip invalid products and continue processing
-                raise
+                continue
         return cleaned_products

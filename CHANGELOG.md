@@ -25,6 +25,7 @@
 - **Instrumentación de Flask**: Métricas de latencia, throughput y error rates funcionando correctamente
 - **Conectividad Docker**: Networking entre contenedores configurado apropiadamente
 - **Fallback de base de datos**: Sistema robusto de fallback pandas si Cassandra no está disponible
+- **Error handling en adaptador**: Productos inválidos se omiten en lugar de detener el procesamiento
 
 ## [1.1.0] - 2025-06-18
 ### Changed
