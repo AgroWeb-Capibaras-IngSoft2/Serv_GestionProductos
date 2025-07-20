@@ -119,6 +119,7 @@ class CassandraConnection:
             stock INT,
             origin TEXT,
             description TEXT,
+            user_id TEXT,
             created_at DATE,
             updated_at DATE,
             is_active BOOLEAN,
@@ -129,19 +130,20 @@ class CassandraConnection:
         """
         
         # Create secondary indexes for common queries
-        create_category_index = """
-        CREATE INDEX IF NOT EXISTS products_category_idx 
-        ON products (category)
-        """
         
         create_active_index = """
         CREATE INDEX IF NOT EXISTS products_active_idx 
         ON products (is_active)
         """
         
+        create_user_id_index = """
+        CREATE INDEX IF NOT EXISTS products_user_id_idx
+        ON products (user_id)
+        """
+
         session = self.get_session()
         session.execute(create_products_table)
-        session.execute(create_category_index)
+        session.execute(create_user_id_index)
         session.execute(create_active_index)
         
         logger.info("Products table and indexes created successfully")

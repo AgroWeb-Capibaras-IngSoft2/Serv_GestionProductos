@@ -30,7 +30,7 @@ paths:
       description: |
         Crea un nuevo producto del agro colombiano. El **productId se auto-genera** automáticamente.
         
-        **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive
+        **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive, userId
         
         **Campos opcionales:** originalPrice, isOrganic, isBestSeller, freeShipping
       parameters:
@@ -56,6 +56,7 @@ paths:
               unit: "1kg"
               origin: "Boyacá"
               imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+              userId: "123456789"
               createdAt: "2025-07-13"
               updatedAt: "2025-07-13"
               isActive: true
@@ -98,6 +99,7 @@ paths:
               "stock": 100,
               "origin": "Boyacá",
               "description": "Papa de excelente calidad cultivada en Boyacá",
+              "userId": "123456789",
               "isActive": true,
               "isOrganic": true,
               "isBestSeller": false,
@@ -108,7 +110,7 @@ paths:
     get:
       summary: Listar todos los productos
       description: |
-        Devuelve una lista completa de todos los productos registrados en el sistema.
+        Devuelve una lista completa de todos los productos activos en el sistema.
         
         **Respuesta:** Array de objetos Product con todos los campos incluidos.
       responses:
@@ -129,6 +131,7 @@ paths:
                 unit: "1kg"
                 origin: "Boyacá"
                 imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+                userId: "123456789"
                 createdAt: "2025-07-13"
                 updatedAt: "2025-07-13"
                 isActive: true
@@ -145,7 +148,8 @@ paths:
                 stock: 0
                 unit: "1kg"
                 origin: "Tolima"
-                imageUrl: "http://localhost:5000/static/catalog/mango.jpg"
+                imageUrl: "http://localhost:5000/static/catalog/mango_tommy.jpg"
+                userId: "987654321"
                 createdAt: "2025-07-13"
                 updatedAt: "2025-07-13"
                 isActive: true
@@ -195,6 +199,7 @@ paths:
               unit: "1kg"
               origin: "Boyacá"
               imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+              userId: "123456789"
               createdAt: "2025-07-13"
               updatedAt: "2025-07-13"
               isActive: true
@@ -217,6 +222,68 @@ paths:
           examples:
             application/json:
               error: "Producto no encontrado"
+        500:
+          description: Error interno del servidor
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              error: "Error interno del servidor"
+      x-curl-example:
+        command: |
+          curl -X GET http://localhost:5000/products/PROD-A1B2C3D4
+
+  /products/byUser/{userId}:
+    get:
+      summary: Consultar productos por ID de usuario
+      description: |
+        Devuelve los datos de todos los productos asociados a un usuario específico según su ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: ID de usuario (formato USER-XXXXXXXX)
+          pattern: "^USER-[0-9]{10}$"
+      responses:
+        200:
+          description: Productos encontrados exitosamente
+          schema:
+            $ref: "#/definitions/Product"
+          examples:
+            application/json:
+              productId: "PROD-A1B2C3D4"
+              name: "Papa Pastusa"
+              description: "Papa de excelente calidad cultivada en Boyacá"
+              category: "vegetables"
+              price: 1200.0
+              stock: 100
+              unit: "1kg"
+              origin: "Boyacá"
+              imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
+              userId: "123456789"
+              createdAt: "2025-07-13"
+              updatedAt: "2025-07-13"
+              isActive: true
+              isOrganic: true
+              isBestSeller: false
+              freeShipping: false
+              originalPrice: 1500.0
+              inStock: true
+        400:
+          description: ID inválido
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              error: "ID inválido"
+        404:
+          description: Productos no encontrados
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              error: "Productos no encontrados"
         500:
           description: Error interno del servidor
           schema:
@@ -270,10 +337,9 @@ paths:
         Endpoint que expone métricas de observabilidad en formato Prometheus.
         
         **Métricas incluidas:**
-        - `flask_http_requests_total` - Contador de requests HTTP
-        - `flask_http_request_duration_seconds` - Histograma de latencia
-        - `agroweb_productos_info` - Información del servicio
-        - Métricas del sistema Python (memoria, CPU, GC)
+        - 'productos_requests_total',
+        - 'productos_request_duration_seconds',
+        - 'productos_errors_total'
         
         **Uso:** Consumido por Prometheus para recolección de métricas.
       produces:
@@ -331,6 +397,7 @@ definitions:
       - stock
       - origin
       - description
+      - userId
       - isActive
     properties:
       name:
@@ -372,6 +439,10 @@ definitions:
         type: boolean
         description: Si el producto está activo en el catálogo
         example: true
+      userId:
+        type: string
+        description: ID del usuario que creó el producto
+        example: "1234567890"
       # Campos opcionales
       originalPrice:
         type: number

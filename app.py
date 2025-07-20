@@ -1,21 +1,19 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_interface.routes import bp
 from flasgger import Swagger
 from flask_cors import CORS
-from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_client import generate_latest
 import os
 
 app = Flask(__name__, static_folder='static')
 
-# OBSERVABILIDAD: Configuración de métricas con Prometheus
-metrics = PrometheusMetrics(app)
-
-# Métricas de información del servicio
-metrics.info('agroweb_productos_info', 'Servicio de Gestión de Productos AgroWeb', version='1.2.0')
-
 swagger = Swagger(app, template_file='swagger/swagger.yaml')
 CORS(app, origins=["http://localhost:5173"])
 app.register_blueprint(bp)
+
+@app.route('/metrics')
+def metrics():
+    return Response(generate_latest(), mimetype='text/plain')
 
 # Manejadores de errores HTTP
 @app.errorhandler(400)

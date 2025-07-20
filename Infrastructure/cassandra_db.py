@@ -65,15 +65,15 @@ class CassandraDB:
             insert_query = """
             INSERT INTO products (
                 product_id, name, category, price, original_price, unit, 
-                image_url, stock, origin, description, created_at, updated_at,
+                image_url, stock, origin, description, user_id, created_at, updated_at,
                 is_active, is_organic, is_best_seller, free_shipping
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             
             values = (
                 product.productId, product.name, product.category, product.price,
                 product.originalPrice, product.unit, product.imageUrl, product.stock,
-                product.origin, product.description, product.createdAt, product.updatedAt,
+                product.origin, product.description, product.userId, product.createdAt, product.updatedAt,
                 product.isActive, product.isOrganic, product.isBestSeller, product.freeShipping
             )
             
@@ -115,13 +115,13 @@ class CassandraDB:
     
     def get_all_products(self) -> List[Dict[str, Any]]:
         """
-        Retrieves all products from the database.
+        Retrieves all products from the database as long as they are active.
         
         Returns:
             List[Dict[str, Any]]: List of all products as dictionaries
         """
         try:
-            query = "SELECT * FROM products"
+            query = "SELECT * FROM products WHERE is_active = true ALLOW FILTERING"
             result = self.session.execute(query)
             
             products = []
@@ -134,68 +134,34 @@ class CassandraDB:
         except Exception as e:
             logger.error(f"Failed to get all products: {str(e)}")
             raise Exception(f"Database error while retrieving products: {str(e)}")
-    
-    def get_products_by_category(self, category: str) -> List[Dict[str, Any]]:
-        """Retrieves products filtered by category"""
+        
+    def get_products_by_user_id(self, user_id: str) -> List[Dict[str, Any]]:
+        """
+        Retrieves all products associated with a specific user ID.
+        
+        Args:
+            user_id (str): User identifier
+            
+        Returns:
+            List[Dict[str, Any]]: List of products for the user as dictionaries
+        """
         try:
-            query = "SELECT * FROM products WHERE category = %s ALLOW FILTERING"
-            result = self.session.execute(query, [category])
+            query = "SELECT * FROM products WHERE user_id = %s AND is_active = true ALLOW FILTERING"
+            result = self.session.execute(query, [user_id])
             
             products = []
             for row in result:
                 products.append(self._row_to_dict(row))
             
-            logger.info(f"Retrieved {len(products)} products for category {category}")
+            logger.info(f"Retrieved {len(products)} products for user {user_id}")
             return products
             
         except Exception as e:
-            logger.error(f"Failed to get products by category {category}: {str(e)}")
-            raise Exception(f"Database error while retrieving products by category: {str(e)}")
-    
-    def get_active_products(self) -> List[Dict[str, Any]]:
-        """Retrieves only active products"""
-        try:
-            query = "SELECT * FROM products WHERE is_active = true ALLOW FILTERING"
-            result = self.session.execute(query)
-            
-            products = []
-            for row in result:
-                products.append(self._row_to_dict(row))
-            
-            logger.info(f"Retrieved {len(products)} active products")
-            return products
-            
-        except Exception as e:
-            logger.error(f"Failed to get active products: {str(e)}")
-            raise Exception(f"Database error while retrieving active products: {str(e)}")
-
+            logger.error(f"Failed to get products for user {user_id}: {str(e)}")
+            raise Exception(f"Database error while retrieving user's products: {str(e)}")
     # ===============================
     # DELETE OPERATIONS
     # ===============================
-    
-    def delete_product(self, product_id: str) -> bool:
-        """
-        Deletes a product from the database.
-        
-        Args:
-            product_id (str): ID of the product to delete
-            
-        Returns:
-            bool: True if product was deleted, False if not found
-        """
-        try:
-            # Check if product exists first
-            if not self.get_product_by_id(product_id):
-                return False
-            
-            query = "DELETE FROM products WHERE product_id = %s"
-            self.session.execute(query, [product_id])
-            logger.info(f"Product {product_id} deleted successfully")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to delete product {product_id}: {str(e)}")
-            raise Exception(f"Database error while deleting product: {str(e)}")
     
     def clear_test_data(self) -> None:
         """
@@ -222,6 +188,34 @@ class CassandraDB:
         except Exception as e:
             logger.error(f"Failed to clear test data: {str(e)}")
             raise Exception(f"Database error while clearing test data: {str(e)}")
+    
+    # ===============================
+    # UPDATE OPERATIONS
+    # ===============================
+    
+    def update_product(self, product_id: str) -> bool:
+        """
+        Changes a product from the database to inactive.
+        
+        Args:
+            product_id (str): ID of the product to update
+
+        Returns:
+            bool: True if product was updated, False if not found
+        """
+        try:
+            # Check if product exists first
+            if not self.get_product_by_id(product_id):
+                return False
+
+            query = "UPDATE products SET is_active = false WHERE product_id = %s"
+            self.session.execute(query, [product_id])
+            logger.info(f"Product {product_id} updated successfully")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to update product {product_id}: {str(e)}")
+            raise Exception(f"Database error while updating product: {str(e)}")
 
     # ===============================
     # UTILITY METHODS
@@ -265,6 +259,7 @@ class CassandraDB:
             "stock": stock,
             "origin": row.origin,
             "description": row.description,
+            "userId": row.user_id,
             "createdAt": format_date(row.created_at),
             "updatedAt": format_date(row.updated_at),
             "isActive": row.is_active,

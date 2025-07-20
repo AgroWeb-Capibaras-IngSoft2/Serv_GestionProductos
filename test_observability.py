@@ -37,9 +37,9 @@ def test_metrics_endpoint_availability():
     # Verificar que contiene métricas esperadas
     content = response.text
     expected_metrics = [
-        'agroweb_productos_info',
-        'flask_http_requests_total',
-        'flask_http_request_duration_seconds'
+        'productos_requests_total',
+        'productos_request_duration_seconds',
+        'productos_errors_total'
     ]
     
     for metric in expected_metrics:
