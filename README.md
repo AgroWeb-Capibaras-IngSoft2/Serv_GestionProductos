@@ -10,7 +10,6 @@ Permite registrar, consultar y listar productos con métricas en tiempo real de 
 ```
 Serv_GestionProductos/
 ├── app.py                          # Aplicación Flask con instrumentación
-├── docker-compose.yml              # Cassandra + Prometheus + Grafana
 ├── requirements.txt                # Dependencias incluyendo observabilidad
 ├── generate_observability_demo.py  # Script de demostración de métricas
 ├── application/                    # Casos de uso del negocio
@@ -19,17 +18,14 @@ Serv_GestionProductos/
 ├── flask_interface/                # Endpoints HTTP
 ├── swagger/                        # Documentación API
 └── observability/                  # Configuración de observabilidad
-    ├── prometheus.yml              # Config de recolección de métricas
-    ├── grafana-datasources/        # Conexión Prometheus-Grafana
-    └── grafana-dashboards/         # Dashboard preconfigurado
 ```
 
 ## ✅ Requisitos
 
 - **Runtime:** Python 3.8+ (recomendado: 3.11 con Anaconda/Miniconda)
 - **Base de Datos:** Cassandra 4.0 (via Docker)
-- **Observabilidad:** Prometheus, Grafana (via Docker)
-- **Dependencias Python:** Flask, prometheus-flask-exporter, pandas, flasgger, cassandra-driver
+- **Observabilidad:** Prometheus nativo (sin Docker ni Grafana)
+- **Dependencias Python:** Flask, prometheus_client, pandas, flasgger, cassandra-driver
 
 ### Instalación de Dependencias:
 ```bash
@@ -68,12 +64,12 @@ pip install -r requirements.txt
 # Archivo .env ya configurado con USE_CASSANDRA=true
 ```
 
-### 1. Iniciar Infraestructura (Base de Datos + Observabilidad)
+### 1. Iniciar Infraestructura (Base de Datos)
 ```bash
-# Iniciar Cassandra, Prometheus y Grafana
-docker-compose up -d
+# Iniciar Cassandra
+docker-compose up -d cassandra
 
-# Verificar que estén ejecutándose
+# Verificar que Cassandra esté ejecutándose
 docker-compose ps
 
 # Esperar que Cassandra esté listo (30-60 segundos)
@@ -94,13 +90,11 @@ python app.py
 - **API:** http://localhost:5000/apidocs (Swagger UI)
 - **Health:** http://localhost:5000/health (Estado del servicio)
 - **Métricas:** http://localhost:5000/metrics (Prometheus metrics)
-- **Prometheus:** http://localhost:9090 (Query interface)
-- **Grafana:** http://localhost:3001 (admin/agroweb2025)
 
 ## 📊 Observabilidad - Métricas Implementadas
 
 ### ¿Qué es la Observabilidad?
-La **observabilidad** es la capacidad de entender el estado interno de un sistema basándose en los datos que produce. En AgroWeb, implementamos observabilidad usando **Prometheus** y **Grafana** para monitorear el rendimiento y salud de nuestros microservicios en tiempo real.
+La **observabilidad** es la capacidad de entender el estado interno de un sistema basándose en los datos que produce. En AgroWeb, implementamos observabilidad usando **Prometheus** para monitorear el rendimiento y salud de nuestros microservicios en tiempo real.
 
 ### 🔍 Prometheus - Recolección de Métricas
 **Prometheus** es un sistema de monitoreo que:
@@ -110,36 +104,17 @@ La **observabilidad** es la capacidad de entender el estado interno de un sistem
 - **Detecta problemas** mediante reglas de alertas
 
 #### Métricas que Prometheus Registra:
-- **`flask_http_requests_total`** - Contador de peticiones HTTP
-  - Labels: method, endpoint, status
-  - Ejemplo: POST /products → 201, GET /products → 200
-- **`flask_http_request_duration_seconds`** - Latencia de peticiones  
-  - Labels: method, endpoint
-  - Percentiles: 50, 95, 99 (tiempo de respuesta)
-- **`agroweb_productos_info`** - Información del servicio
-  - Versión, nombre del servicio
+- **`productos_requests_total`** - Contador de peticiones HTTP por endpoint y método
+- **`productos_request_duration_seconds`** - Latencia de peticiones por endpoint
+- **`productos_errors_total`** - Contador de errores por endpoint
 - **Métricas del sistema Python** - Uso de memoria, CPU, GC
-
-### 📈 Grafana - Visualización de Datos
-**Grafana** es una plataforma de visualización que:
-- **Conecta a Prometheus** como fuente de datos
-- **Crea dashboards** con gráficos en tiempo real
-- **Muestra tendencias** y patrones de uso
-- **Alerta automáticamente** cuando hay problemas
-
-#### Dashboard "AgroWeb - Servicio de Productos":
-- **📊 Peticiones por segundo** - Tráfico del API en tiempo real
-- **⏱️ Latencia P95** - Tiempo de respuesta del 95% de peticiones
-- **❌ Errores por código HTTP** - Monitoreo de errores 4xx/5xx
-- **🎯 Peticiones por Método HTTP** - Distribución GET, POST, etc.
-- **Actualización:** Cada 5 segundos automáticamente
 
 ### 🔄 Flujo de Observabilidad:
 ```
-API Flask → Genera métricas → Prometheus recolecta → Grafana visualiza
-     ↓              ↓                    ↓                ↓
-/products       requests_total      Series DB       Dashboard
-/health         duration_seconds     PromQL          Alertas
+API Flask → Genera métricas → Prometheus recolecta
+     ↓              ↓                    ↓
+/products       requests_total      Series DB
+/health         duration_seconds     PromQL
 ```
 
 ### Demo de Observabilidad
@@ -147,24 +122,20 @@ API Flask → Genera métricas → Prometheus recolecta → Grafana visualiza
 # Generar tráfico automático para demostrar métricas en tiempo real
 python generate_observability_demo.py
 
-# El script genera 4 patrones de tráfico:
-# 🌱 Tráfico normal (30 requests, 2 concurrent)  
-# 🚀 Pico de tráfico (60 requests, 5 concurrent)
-# 🐌 Tráfico lento (15 requests, 1 concurrent)
-# 📈 Carga mixta (40 requests, 3 concurrent)
+# El script genera patrones de tráfico para visualizar métricas:
+# - Tráfico normal
+# - Pico de tráfico
+# - Tráfico lento
+# - Carga mixta
 
 # Monitorear en tiempo real:
-# - Prometheus: http://localhost:9090
-# - Grafana Dashboard: http://localhost:3001
+# - Endpoint de métricas: http://localhost:5000/metrics
 ```
 
 ### Tests de Observabilidad
 ```bash
 # Ejecutar tests automatizados para endpoints de monitoreo
 python test_observability.py
-
-# O usar pytest para testing más avanzado (requiere: pip install pytest)
-pytest test_observability.py -v
 
 # Los tests validan:
 # ✅ Endpoint /health retorna JSON con formato correcto
@@ -178,7 +149,7 @@ pytest test_observability.py -v
 ### POST `/products` - Crear Producto
 - **Descripción:** Crea un nuevo producto (productId se auto-genera)
 - **Content-Type:** application/json
-- **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description
+- **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, user_id
 - **Campos opcionales:** isActive, originalPrice, isOrganic, isBestSeller, freeShipping
 - **Respuestas:**
   - **201:** Producto creado exitosamente
@@ -187,7 +158,7 @@ pytest test_observability.py -v
   - **500:** Error interno del servidor
 
 ### GET `/products` - Listar Productos
-- **Descripción:** Obtiene todos los productos registrados
+- **Descripción:** Obtiene todos los productos activos registrados
 - **Respuestas:**
   - **200:** Lista de productos (array JSON)
   - **500:** Error interno del servidor
@@ -198,6 +169,13 @@ pytest test_observability.py -v
   - **200:** Producto encontrado
   - **400:** ID inválido
   - **404:** Producto no encontrado
+  - **500:** Error interno del servidor
+
+### GET `/products/byUser/<user_id>` - Listar Productos por Usuario
+- **Descripción:** Obtiene todos los productos registrados por un usuario específico
+- **Respuestas:**
+  - **200:** Lista de productos asociados al usuario
+  - **400:** user_id inválido
   - **500:** Error interno del servidor
 
 ### GET `/health` - Estado del Servicio
@@ -236,29 +214,28 @@ curl -X POST http://localhost:5000/products \
     "stock": 50,
     "origin": "Cundinamarca",
     "description": "Papa pastusa fresca de alta calidad",
+    "user_id": "USUARIO-12345678",
     "isOrganic": true,
     "isBestSeller": false,
     "freeShipping": false
   }'
 
-# Listar todos los productos
+# Listar todos los productos activos
 curl http://localhost:5000/products
 
 # Consultar producto específico (usar ID retornado en creación)
 curl http://localhost:5000/products/PROD-12345678
+
+# Listar productos por usuario
+curl http://localhost:5000/products/byUser/USUARIO-12345678
 ```
 
 ## 🔧 Configuración de Observabilidad
 
-### Prometheus (puerto 9090)
-- **Configuración:** `observability/prometheus.yml`
-- **Target:** API nativo en `host.docker.internal:5000/metrics`
-- **Scrape interval:** 5 segundos
-
-### Grafana (puerto 3001)  
-- **Credenciales:** admin/agroweb2025
-- **Datasource:** Prometheus automáticamente configurado
-- **Dashboard:** "AgroWeb - Servicio de Productos" pre-cargado
+### Prometheus
+- **Configuración:** El servicio expone métricas nativamente en `/metrics`
+- **Scrape interval:** Configurable desde Prometheus (por defecto cada 5 segundos)
+- **No requiere Docker ni Grafana** para monitoreo básico
 
 ## 📄 Documentación API
 
@@ -274,30 +251,14 @@ Swagger UI disponible en: http://localhost:5000/apidocs
 # - Errores de conexión
 ```
 
-### Queries Útiles en Prometheus
-```promql
-# Tasa de peticiones por segundo
-rate(flask_http_requests_total[1m])
-
-# Latencia percentil 95
-histogram_quantile(0.95, rate(flask_http_request_duration_seconds_bucket[5m]))
-
-# Errores HTTP 4xx y 5xx
-flask_http_requests_total{status=~"4..|5.."}
-```
-
 ## 🛠️ Troubleshooting
 
 | Problema | Solución |
 |----------|----------|
 | **API no responde** | Verificar `conda activate agroweb` y `python app.py` ejecutándose |
-| **Grafana muestra "No data"** | El API Flask debe estar ejecutándose en puerto 5000. Verificar: `python app.py` |
 | **Solo algunos paneles con datos** | Generar tráfico: `python generate_observability_demo.py` |
-| **Grafana dashboards vacíos** | Restart Grafana: `docker-compose restart grafana` y generar tráfico |
-| **"Prometheus was not found"** | Reiniciar Grafana: `docker-compose restart grafana` |
 | **Error cassandra-driver** | Instalar con conda: `conda install cassandra-driver -y` |
-| **Prometheus sin datos** | Comprobar `host.docker.internal:5000/metrics` accesible |
-| **Grafana "datasource not found"** | Reiniciar contenedor: `docker-compose restart grafana` |
+| **Prometheus sin datos** | Comprobar `localhost:5000/metrics` accesible |
 | **Error de dependencias** | Usar conda environment: `conda activate agroweb` |
 | **Contenedores no inician** | Verificar Docker Desktop ejecutándose |
 | **Puerto 5000 ocupado** | Cambiar puerto en app.py o cerrar proceso conflictivo |
@@ -328,7 +289,7 @@ USE_CASSANDRA=true  # Cassandra como backend principal
 ### Comandos Docker Útiles
 ```bash
 # Iniciar servicios
-docker-compose up -d
+docker-compose up -d cassandra
 
 # Detener servicios  
 docker-compose down
@@ -338,7 +299,3 @@ docker-compose logs cassandra
 
 # Acceder a CLI de Cassandra
 docker exec -it agroweb-cassandra cqlsh
-
-# Reiniciar solo Grafana (si dashboards muestran "No data")
-docker-compose restart grafana
-```

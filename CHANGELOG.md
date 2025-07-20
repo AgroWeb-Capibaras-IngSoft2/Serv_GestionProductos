@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## [1.2.1] - 2025-07-20
+### Added
+- **Campo `user_id`** añadido al modelo de productos para asociar cada producto al usuario que lo registró.
+- **Endpoint `/products/byUser/<user_id>`** para consultar productos por usuario asociado.
+
+### Changed
+- **Índice secundario**: Se eliminó el índice por categoría y se añadió índice secundario por `user_id` en Cassandra para optimizar búsquedas por usuario.
+- **Búsqueda de productos**: El endpoint `/products` ahora retorna únicamente productos activos (`isActive = true`), alineado con el catálogo del frontend.
+- **Observabilidad Prometheus**: La integración con Prometheus ahora es nativa en Python, sin depender de Docker ni de Grafana. Las métricas se consultan directamente en el endpoint `/metrics`.
+- **Documentación y ejemplos**: Actualizados para reflejar los cambios en la estructura del modelo y la observabilidad.
+
+### Removed
+- **Índice por categoría** en Cassandra (el filtrado por categoría se realiza en el frontend).
+- **Grafana**: Ya no se utiliza para dashboards de métricas en este servicio.
+- **Prometheus en Docker**: La recolección de métricas se realiza directamente desde el servicio Python.
+
+### Fixed
+- **Validación de usuario**: Se verifica que el usuario exista antes de registrar un producto.
+- **Consistencia de datos**: El filtrado por productos activos está correctamente implementado en el backend.
+
+---
+
 ## [1.2.0] - 2025-07-13
 ### Added
 - **Observabilidad integrada** con Prometheus y Grafana para monitoreo en tiempo real
@@ -49,4 +71,4 @@
 ### Added
 - Estructura inicial del microservicio de productos agrocolombianos.
 - Endpoints para crear, listar y consultar productos.
-- Validación de campos obligatorios.
+- Validación de campos

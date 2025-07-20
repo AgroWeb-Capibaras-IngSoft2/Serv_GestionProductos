@@ -38,3 +38,26 @@ class AdapterProductRepo(ProductRepository):
                 # Skip invalid products and continue processing
                 continue
         return cleaned_products
+    
+    def get_products_by_user_id(self, user_id: str):
+        import math
+        def clean(prod):
+            prod = dict(prod)
+            prod.pop("inStock", None)
+            for k, v in prod.items():
+                if isinstance(v, float) and math.isnan(v):
+                    prod[k] = None
+                if v == "NaT":
+                    prod[k] = None
+            return prod
+
+        cleaned_products = []
+        for prod in self.database.get_products_by_user_id(user_id):
+            try:
+                cleaned = clean(prod)
+                p = Product(**cleaned)
+                cleaned_products.append(p)
+            except Exception as e:
+                # Skip invalid products and continue processing
+                continue
+        return cleaned_products

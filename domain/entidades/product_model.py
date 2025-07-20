@@ -13,6 +13,7 @@ class Product:
     stock: int             # Cantidad en inventario actual
     origin: str            # Lugar de origen (ej: "Boyacá", "Valle del Cauca")
     description: str       # Descripción del producto
+    user_id: str           # ID del usuario que creó el producto
     
     # Campos opcionales en el input - Pueden proporcionarse, usarán valor por defecto si no
     originalPrice: float = None    # Precio original antes de descuentos
@@ -52,6 +53,8 @@ class Product:
             raise ValueError("El origen es obligatorio")
         if not self.imageUrl:
             raise ValueError("La URL de la imagen es obligatoria")
+        if not self.user_id:
+            raise ValueError("El ID del usuario es obligatorio")
 
     def toDictionary(self):
         from math import isnan
@@ -74,6 +77,7 @@ class Product:
             "stock": clean(self.stock),
             "origin": self.origin,
             "description": self.description,
+            "user_id": self.user_id,
             "isActive": self.isActive,
             "originalPrice": clean(self.originalPrice),
             "isOrganic": self.isOrganic,
