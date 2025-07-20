@@ -14,3 +14,7 @@ class ProductRepository(ABC):
     @abstractmethod
     def get_all_products(self) -> List[Product]:
         pass
+    
+    @abstractmethod
+    def get_products_by_user_id(self, user_id: str) -> List[Product]:
+        pass

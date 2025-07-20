@@ -1,0 +1,18 @@
+# Core Flask dependencies
+flask>=2.0.0
+flask-cors>=3.0.0
+flasgger>=0.9.5
+
+# Database and environment
+pandas>=1.5.0
+python-dotenv>=0.19.0
+
+# Testing
+requests>=2.25.0
+
+# Observabilidad
+prometheus_client>=0.14.1
+
+# Cassandra driver - REQUIRED: Install with conda only
+# Run: conda install cassandra-driver -y
+# Note: pip installation not supported due to Python 3.13 compatibility issues
