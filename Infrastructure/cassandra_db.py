@@ -73,7 +73,7 @@ class CassandraDB:
             values = (
                 product.productId, product.name, product.category, product.price,
                 product.originalPrice, product.unit, product.imageUrl, product.stock,
-                product.origin, product.description, product.userId, product.createdAt, product.updatedAt,
+                product.origin, product.description, product.user_id, product.createdAt, product.updatedAt,
                 product.isActive, product.isOrganic, product.isBestSeller, product.freeShipping
             )
             

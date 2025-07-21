@@ -15,7 +15,7 @@ get_all_service = GetAllProductsService(repo)
 get_by_user_id_service = GetProductsByUserIDService(repo)
 
 def validate_user_exists(user_id):
-    resp = requests.get(f"http://localhost:5000/users/getById/{user_id}")
+    resp = requests.get(f"http://localhost:5001/users/getById/{user_id}")
     return resp.status_code == 200
 
 @bp.route("/products", methods=["POST"])
@@ -26,14 +26,14 @@ def create_product():
     data = request.get_json()
     required_fields = [
     "name", "category", "price", "unit", "imageUrl", "stock",
-    "origin", "description", "isActive", "userId"
+    "origin", "description", "isActive", "user_id"
     ]
     # The rest (originalPrice, isOrganic, isBestSeller, freeShipping) are optional
     # productId is auto-generated and should not be provided by client
     missing = [f for f in required_fields if f not in data]
     if missing:
         return jsonify({"error": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400
-    if not validate_user_exists(data.get("userId")):
+    if not validate_user_exists(data.get("user_id")):
         return jsonify({"error": "Usuario no encontrado"}), 404
     try:
         product = create_service.execute(data)

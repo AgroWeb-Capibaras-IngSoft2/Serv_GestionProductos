@@ -1,3 +1,10 @@
+"""
+Servicio de Gestión de Productos para Agroweb
+Aplicación Flask que maneja la gestión de productos agrícolas de la plataforma Agroweb.
+Incluye registro, consulta y listado de productos con Cassandra como base de datos.
+Instrumentación de métricas Prometheus para observabilidad.
+"""
+
 from flask import Flask, jsonify, request, Response
 from flask_interface.routes import bp
 from flasgger import Swagger
@@ -7,10 +14,16 @@ import os
 
 app = Flask(__name__, static_folder='static')
 
+# Configuración de Swagger para documentación automática de la API
 swagger = Swagger(app, template_file='swagger/swagger.yaml')
+
+# Configuración de CORS para permitir solicitudes desde el frontend (puerto 5173)
 CORS(app, origins=["http://localhost:5173"])
+
+# Registro del blueprint de rutas de productos
 app.register_blueprint(bp)
 
+# Endpoint de métricas Prometheus para observabilidad
 @app.route('/metrics')
 def metrics():
     return Response(generate_latest(), mimetype='text/plain')
