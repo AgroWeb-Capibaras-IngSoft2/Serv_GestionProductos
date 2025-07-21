@@ -1,4 +1,10 @@
 # CHANGELOG
+## [1.2.2] - 2025-07-21
+### Fixed
+- **Hotfix de integración con Serv_Usuarios:**
+  - Se corrigieron referencias al servicio de usuarios para la validación de existencia antes de registrar un producto.
+  - Se ajustó el uso de `user_id` en vez de `UserId` en las llamadas y validaciones.
+  - Se corrigió el puerto de referencia del microservicio de usuarios, cambiando de 5000 a 5001 en las llamadas HTTP.
 
 ## [1.2.1] - 2025-07-20
 ### Added

@@ -273,6 +273,10 @@ Swagger UI disponible en: http://localhost:5000/apidocs
 - **Entorno:** REQUIERE Anaconda/Miniconda para compatibilidad con cassandra-driver
 - **Auto-generación:** ProductId se genera automáticamente, no incluir en POST requests
 
+### Integración y Validación de Usuarios
+- **Validación de usuario:** Antes de registrar un producto, el servicio verifica que el usuario exista en el microservicio Serv_Usuarios mediante una petición HTTP a `http://localhost:5001/users/getById/<user_id>`. El campo utilizado para la validación y asociación es `user_id`.
+- **Hotfix 1.2.2:** Se corrigieron referencias y validaciones para asegurar que la integración con Serv_Usuarios se realiza correctamente usando el puerto 5001 y el campo `user_id`.
+
 ### Configuración de Base de Datos
 ```bash
 # Configuración por defecto en .env:
