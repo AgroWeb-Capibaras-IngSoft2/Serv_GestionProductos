@@ -10,7 +10,7 @@ info:
     - Validación completa de campos
     - Manejo robusto de errores
     - Documentación interactiva
-  version: "1.2.0"
+  version: "1.2.2"
   contact:
     name: AgroWeb Team
     url: https://github.com/AgroWeb-Capibaras-IngSoft2
@@ -31,6 +31,7 @@ paths:
         Crea un nuevo producto del agro colombiano. El **productId se auto-genera** automáticamente.
         
         **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive, userId
+        **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive, user_id
         
         **Campos opcionales:** originalPrice, isOrganic, isBestSeller, freeShipping
       parameters:
@@ -100,6 +101,7 @@ paths:
               "origin": "Boyacá",
               "description": "Papa de excelente calidad cultivada en Boyacá",
               "userId": "123456789",
+              "user_id": "1234567890",
               "isActive": true,
               "isOrganic": true,
               "isBestSeller": false,
@@ -132,6 +134,7 @@ paths:
                 origin: "Boyacá"
                 imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
                 userId: "123456789"
+                user_id: "1234567890"
                 createdAt: "2025-07-13"
                 updatedAt: "2025-07-13"
                 isActive: true
@@ -200,6 +203,7 @@ paths:
               origin: "Boyacá"
               imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
               userId: "123456789"
+              user_id: "1234567890"
               createdAt: "2025-07-13"
               updatedAt: "2025-07-13"
               isActive: true
@@ -262,6 +266,7 @@ paths:
               origin: "Boyacá"
               imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
               userId: "123456789"
+              user_id: "1234567890"
               createdAt: "2025-07-13"
               updatedAt: "2025-07-13"
               isActive: true
@@ -294,6 +299,7 @@ paths:
       x-curl-example:
         command: |
           curl -X GET http://localhost:5000/products/PROD-A1B2C3D4
+          curl -X GET http://localhost:5000/products/byUser/1234567890
 
   /health:
     get:
@@ -397,7 +403,7 @@ definitions:
       - stock
       - origin
       - description
-      - userId
+      - user_id
       - isActive
     properties:
       name:
@@ -440,6 +446,7 @@ definitions:
         description: Si el producto está activo en el catálogo
         example: true
       userId:
+      user_id:
         type: string
         description: ID del usuario que creó el producto
         example: "1234567890"
