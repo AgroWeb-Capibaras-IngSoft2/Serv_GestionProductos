@@ -1,4 +1,15 @@
 # CHANGELOG
+## [1.2.4] - 2025-07-23
+### Fixed
+- **Manejo de imágenes en registro de productos:** Se corrigió el flujo de subida y almacenamiento de imágenes, asegurando que la imagen se guarde con el nombre basado en el productId y se actualice correctamente el campo imageUrl en la base de datos.
+- **Validación de tipos en backend:** Se corrigió la conversión de los campos `stock` y `price` a enteros y flotantes respectivamente antes de crear el producto, evitando errores de comparación de tipos.
+
+### Changed
+- **Integración con Serv_Usuarios:** Se mejoró la validación de existencia de usuario antes de registrar un producto, asegurando la consistencia de los datos y la comunicación entre microservicios.
+
+### Improved
+- **Experiencia de usuario:** Se mejoró la respuesta de error y éxito en el registro de productos, mostrando mensajes más claros en el frontend.
+
 ## [1.2.3] - 2025-07-22
 ### Fixed
 - **Validación de categorías:** Se corrigieron los valores de categoría en los datos de prueba y en la validación del backend para aceptar únicamente las categorías válidas como (`vegetales`, `frutas`, `lácteos`, `hierbas`).

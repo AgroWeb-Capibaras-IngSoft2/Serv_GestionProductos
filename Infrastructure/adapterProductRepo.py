@@ -68,3 +68,6 @@ class AdapterProductRepo(ProductRepository):
                 # Skip invalid products and continue processing
                 continue
         return cleaned_products
+    
+    def update_image_url(self, product_id, image_url):
+        self.database.update_image_url(product_id, image_url)

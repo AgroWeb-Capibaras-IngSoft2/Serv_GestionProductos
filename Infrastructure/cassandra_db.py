@@ -225,7 +225,10 @@ class CassandraDB:
         except Exception as e:
             logger.error(f"Failed to update product {product_id}: {str(e)}")
             raise Exception(f"Database error while updating product: {str(e)}")
-
+        
+    def update_image_url(self, product_id, image_url):
+        query = "UPDATE products SET image_url = %s WHERE product_id = %s"
+        self.session.execute(query, (image_url, product_id))
     # ===============================
     # UTILITY METHODS
     # ===============================
