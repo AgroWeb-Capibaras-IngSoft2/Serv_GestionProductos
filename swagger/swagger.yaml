@@ -51,7 +51,7 @@ paths:
               productId: "PROD-A1B2C3D4"
               name: "Papa Pastusa"
               description: "Papa de excelente calidad cultivada en Boyacá"
-              category: "vegetables"
+              category: "vegetales"
               price: 1200.0
               stock: 100
               unit: "1kg"
@@ -93,7 +93,7 @@ paths:
             -H "Content-Type: application/json" \
             -d '{
               "name": "Papa Pastusa",
-              "category": "vegetables", 
+              "category": "vegetales", 
               "price": 1200.0,
               "unit": "1kg",
               "imageUrl": "http://localhost:5000/static/catalog/papa_pastusa.jpg",
@@ -127,7 +127,7 @@ paths:
               - productId: "PROD-A1B2C3D4"
                 name: "Papa Pastusa"
                 description: "Papa de excelente calidad cultivada en Boyacá"
-                category: "vegetables"
+                category: "vegetales"
                 price: 1200.0
                 stock: 100
                 unit: "1kg"
@@ -196,7 +196,7 @@ paths:
               productId: "PROD-A1B2C3D4"
               name: "Papa Pastusa"
               description: "Papa de excelente calidad cultivada en Boyacá"
-              category: "vegetables"
+              category: "vegetales"
               price: 1200.0
               stock: 100
               unit: "1kg"
@@ -259,8 +259,7 @@ paths:
               productId: "PROD-A1B2C3D4"
               name: "Papa Pastusa"
               description: "Papa de excelente calidad cultivada en Boyacá"
-              category: "vegetables"
-              price: 1200.0
+              category: "vegetales"
               stock: 100
               unit: "1kg"
               origin: "Boyacá"
@@ -413,8 +412,8 @@ definitions:
       category:
         type: string
         description: Categoría del producto
-        enum: ["vegetables", "fruits", "dairy", "herbs"]
-        example: "vegetables"
+        enum: ["vegetales", "frutas", "lácteos", "hierbas"]
+        example: "vegetales"
       price:
         type: number
         description: Precio actual del producto en pesos colombianos

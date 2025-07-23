@@ -17,8 +17,8 @@ app = Flask(__name__, static_folder='static')
 # Configuración de Swagger para documentación automática de la API
 swagger = Swagger(app, template_file='swagger/swagger.yaml')
 
-# Configuración de CORS para permitir solicitudes desde el frontend (puerto 5173)
-CORS(app, origins=["http://localhost:5173"])
+# Configuración de CORS para permitir solicitudes desde el frontend (puerto 5174)
+CORS(app, origins=["http://localhost:5174"])
 
 # Registro del blueprint de rutas de productos
 app.register_blueprint(bp)
