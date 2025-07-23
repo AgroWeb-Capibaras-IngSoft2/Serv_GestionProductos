@@ -25,23 +25,30 @@ def create_product():
         abort(415)
     data = request.get_json()
     required_fields = [
-    "name", "category", "price", "unit", "imageUrl", "stock",
-    "origin", "description", "isActive", "user_id"
+        "name", "category", "price", "unit", "imageUrl", "stock",
+        "origin", "description", "isActive", "user_id"
     ]
     # The rest (originalPrice, isOrganic, isBestSeller, freeShipping) are optional
     # productId is auto-generated and should not be provided by client
     missing = [f for f in required_fields if f not in data]
     if missing:
         return jsonify({"error": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400
+    # Category validation
+    allowed_categories = [
+        "Frutas", "Verduras", "Lácteos", "Carnes", "Bebidas", "Tubérculos",
+        "Cereales", "Especias", "Huevos", "Hierbas", "Otros"
+    ]
+    if data.get("category") not in allowed_categories:
+        return jsonify({"error": "Categoría inválida"}), 400
     if not validate_user_exists(data.get("user_id")):
         return jsonify({"error": "Usuario no encontrado"}), 404
     try:
         product = create_service.execute(data)
         return jsonify(product.toDictionary()), 201
-    except ValueError as e:
+    except (ValueError, TypeError) as e:
         return jsonify({"error": str(e)}), 400
-    except Exception:
-        abort(500)
+    except Exception as e:
+        return jsonify({"error": "Error interno", "details": str(e)}), 400
 
 @bp.route("/products/<product_id>", methods=["GET"])
 @monitor_endpoint("get_product_by_id")
@@ -50,20 +57,24 @@ def get_product_by_id(product_id):
         return jsonify({"error": "ID inválido"}), 400
     try:
         product = get_by_id_service.execute(product_id)
+        if product is None:
+            return jsonify({"error": "Producto no encontrado"}), 404
         return jsonify(product.toDictionary()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
-    except Exception:
-        abort(500)
+    except Exception as e:
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 @bp.route("/products", methods=["GET"])
 @monitor_endpoint("get_all_products")
 def get_all_products():
     try:
         products = get_all_service.execute()
+        if not products:
+            return jsonify([]), 200
         return jsonify([p.toDictionary() for p in products]), 200
-    except Exception:
-        abort(500)
+    except Exception as e:
+        return jsonify({"error": "Error interno", "details": str(e)}), 500
         
 @bp.route("/products/user/<user_id>", methods=["GET"])
 @monitor_endpoint("get_products_by_user_id")
@@ -72,11 +83,13 @@ def get_products_by_user_id(user_id):
         return jsonify({"error": "ID de usuario inválido"}), 400
     try:
         products = get_by_user_id_service.execute(user_id)
+        if not products:
+            return jsonify([]), 200
         return jsonify([p.toDictionary() for p in products]), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
-    except Exception:
-        abort(500)
+    except Exception as e:
+        return jsonify({"error": "Error interno", "details": str(e)}), 500
 
 @bp.route("/test", methods=["GET"])
 @monitor_endpoint("test_route")
