@@ -10,7 +10,7 @@ info:
     - Validación completa de campos
     - Manejo robusto de errores
     - Documentación interactiva
-  version: "1.2.2"
+  version: "1.2.3"
   contact:
     name: AgroWeb Team
     url: https://github.com/AgroWeb-Capibaras-IngSoft2
@@ -30,7 +30,6 @@ paths:
       description: |
         Crea un nuevo producto del agro colombiano. El **productId se auto-genera** automáticamente.
         
-        **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive, userId
         **Campos requeridos:** name, category, price, unit, imageUrl, stock, origin, description, isActive, user_id
         
         **Campos opcionales:** originalPrice, isOrganic, isBestSeller, freeShipping
@@ -57,7 +56,7 @@ paths:
               unit: "1kg"
               origin: "Boyacá"
               imageUrl: "http://localhost:5000/static/catalog/papa_pastusa.jpg"
-              userId: "123456789"
+              user_id: "1234567890"
               createdAt: "2025-07-13"
               updatedAt: "2025-07-13"
               isActive: true
@@ -100,7 +99,6 @@ paths:
               "stock": 100,
               "origin": "Boyacá",
               "description": "Papa de excelente calidad cultivada en Boyacá",
-              "userId": "123456789",
               "user_id": "1234567890",
               "isActive": true,
               "isOrganic": true,
@@ -146,13 +144,13 @@ paths:
               - productId: "PROD-B5C6D7E8"
                 name: "Mango Tommy"
                 description: "Mango dulce y jugoso de Tolima"
-                category: "fruits"
+                category: "frutas"
                 price: 2500.0
                 stock: 0
                 unit: "1kg"
                 origin: "Tolima"
                 imageUrl: "http://localhost:5000/static/catalog/mango_tommy.jpg"
-                userId: "987654321"
+                user_id: "9876543210"
                 createdAt: "2025-07-13"
                 updatedAt: "2025-07-13"
                 isActive: true
@@ -297,7 +295,6 @@ paths:
               error: "Error interno del servidor"
       x-curl-example:
         command: |
-          curl -X GET http://localhost:5000/products/PROD-A1B2C3D4
           curl -X GET http://localhost:5000/products/byUser/1234567890
 
   /health:
@@ -321,7 +318,7 @@ paths:
                 example: "productos"
               version:
                 type: string
-                example: "1.2.0"
+                example: "1.2.3"
               metrics_endpoint:
                 type: string
                 example: "/metrics"
@@ -329,7 +326,7 @@ paths:
             application/json:
               status: "healthy"
               service: "productos"
-              version: "1.2.0"
+              version: "1.2.3"
               metrics_endpoint: "/metrics"
       x-curl-example:
         command: |
