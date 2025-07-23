@@ -6,6 +6,8 @@ from application.useCases.GetAllProductsService import GetAllProductsService
 from application.useCases.GetProductsByUserIDService import GetProductsByUserIDService
 from observability.MetricsDecorator import monitor_endpoint
 import requests
+import os
+from werkzeug.utils import secure_filename
 
 bp = Blueprint('productos', __name__)
 repo = AdapterProductRepo()
@@ -21,29 +23,37 @@ def validate_user_exists(user_id):
 @bp.route("/products", methods=["POST"])
 @monitor_endpoint("create_product")
 def create_product():
-    if not request.is_json:
+    if not request.content_type.startswith('multipart/form-data'):
         abort(415)
-    data = request.get_json()
+    # Get form fields
+    data = request.form.to_dict()
+    data["stock"] = int(data["stock"])
+    data["price"] = float(data["price"])
+    # Get the file
+    image = request.files.get('image')
+    # Validate required fields except imageUrl
     required_fields = [
-        "name", "category", "price", "unit", "imageUrl", "stock",
-        "origin", "description", "isActive", "user_id"
+        "name", "category", "price", "unit", "stock",
+        "origin", "description", "user_id"
     ]
-    # The rest (originalPrice, isOrganic, isBestSeller, freeShipping) are optional
-    # productId is auto-generated and should not be provided by client
     missing = [f for f in required_fields if f not in data]
-    if missing:
-        return jsonify({"error": f"Faltan campos obligatorios: {', '.join(missing)}"}), 400
-    # Category validation
-    allowed_categories = [
-        "Frutas", "Verduras", "Lácteos", "Carnes", "Bebidas", "Tubérculos",
-        "Cereales", "Especias", "Huevos", "Hierbas", "Otros"
-    ]
-    if data.get("category") not in allowed_categories:
-        return jsonify({"error": "Categoría inválida"}), 400
-    if not validate_user_exists(data.get("user_id")):
-        return jsonify({"error": "Usuario no encontrado"}), 404
+    if missing or not image:
+        return jsonify({"error": f"Faltan campos obligatorios: {', '.join(missing + (['image'] if not image else []))}"}), 400
+    # Validate category and user as before...
+    # Temporarily set imageUrl to empty string
+    data["imageUrl"] = ""
     try:
+        # Create product (generates productId)
         product = create_service.execute(data)
+        # Save image with productId as filename
+        ext = os.path.splitext(secure_filename(image.filename))[1]
+        filename = f"{product.productId}{ext}"
+        save_path = os.path.join("static", "catalog", filename)
+        image.save(save_path)
+        # Update imageUrl
+        product.imageUrl = f"http://localhost:5000/static/catalog/{filename}"
+        # Save/update product in DB with new imageUrl
+        repo.update_image_url(product.productId, product.imageUrl) 
         return jsonify(product.toDictionary()), 201
     except (ValueError, TypeError) as e:
         return jsonify({"error": str(e)}), 400

@@ -51,7 +51,7 @@ class Product:
             raise ValueError("La unidad de medida es obligatoria")
         if not self.origin:
             raise ValueError("El origen es obligatorio")
-        if not self.imageUrl:
+        if self.imageUrl is None:
             raise ValueError("La URL de la imagen es obligatoria")
         if not self.user_id:
             raise ValueError("El ID del usuario es obligatorio")
