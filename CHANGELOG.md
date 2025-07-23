@@ -1,4 +1,17 @@
 # CHANGELOG
+## [1.2.3] - 2025-07-22
+### Fixed
+- **Validación de categorías:** Se corrigieron los valores de categoría en los datos de prueba y en la validación del backend para aceptar únicamente las categorías válidas como (`vegetales`, `frutas`, `lácteos`, `hierbas`).
+- **Edge cases de productos:** Se ajustaron los tests y la lógica de creación para manejar correctamente productos con datos límite o inusuales.
+- **Endpoint `/products/user/<user_id>`:** Se corrigió un error 500 al consultar productos por usuario, asegurando manejo robusto de datos y respuestas.
+- **Consistencia de nombres de campos:** Se revisó y unificó el uso de `user_id` en todo el flujo de productos y validaciones.
+
+### Improved
+- **Rendimiento bajo carga:** Se optimizó el manejo de errores y la respuesta de endpoints críticos para mejorar el throughput y la latencia en escenarios de carga y error.
+- **Documentación:** Se actualizaron los ejemplos y la documentación Swagger para reflejar los valores válidos de categoría y los cambios en los endpoints.
+- **Cobertura de pruebas:** Se ampliaron y corrigieron los tests de integración para cubrir casos límite y asegurar la estabilidad del servicio.
+
+---
 ## [1.2.2] - 2025-07-21
 ### Fixed
 - **Hotfix de integración con Serv_Usuarios:**

@@ -14,10 +14,15 @@ class AdapterProductRepo(ProductRepository):
         data = self.database.get_product_by_id(product_id)
         if data and "inStock" in data:
             del data["inStock"]
-        return Product(**data) if data else None
+        try:
+            return Product(**data) if data else None
+        except Exception as e:
+            return None
 
     def get_all_products(self):
         import math
+        import logging
+        logger = logging.getLogger(__name__)
         def clean(prod):
             prod = dict(prod)
             prod.pop("inStock", None)
@@ -32,11 +37,13 @@ class AdapterProductRepo(ProductRepository):
         for prod in self.database.get_all_products():
             try:
                 cleaned = clean(prod)
+                logger.debug(f"Attempting to create Product with: {cleaned}")
                 p = Product(**cleaned)
                 cleaned_products.append(p)
             except Exception as e:
-                # Skip invalid products and continue processing
+                logger.error(f"Skipping product due to error: {e}. Data: {cleaned}")
                 continue
+        logger.info(f"Total products returned: {len(cleaned_products)}")
         return cleaned_products
     
     def get_products_by_user_id(self, user_id: str):

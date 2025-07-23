@@ -9,6 +9,8 @@ from Infrastructure.cassandra_connection import get_cassandra_connection
 from datetime import date, datetime
 import logging
 from typing import List, Optional, Dict, Any
+from cassandra import ConsistencyLevel
+from cassandra.query import SimpleStatement
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +79,8 @@ class CassandraDB:
                 product.isActive, product.isOrganic, product.isBestSeller, product.freeShipping
             )
             
-            self.session.execute(insert_query, values)
+            statement = SimpleStatement(insert_query, consistency_level=ConsistencyLevel.ONE)
+            self.session.execute(statement, values)
             logger.info(f"Product {product.productId} added successfully")
             
         except ValueError:
@@ -102,7 +105,8 @@ class CassandraDB:
         """
         try:
             query = "SELECT * FROM products WHERE product_id = %s"
-            result = self.session.execute(query, [product_id])
+            statement = SimpleStatement(query, consistency_level=ConsistencyLevel.ONE)
+            result = self.session.execute(statement, [product_id])
             row = result.one()
             
             if row:
@@ -122,7 +126,8 @@ class CassandraDB:
         """
         try:
             query = "SELECT * FROM products WHERE is_active = true ALLOW FILTERING"
-            result = self.session.execute(query)
+            statement = SimpleStatement(query, consistency_level=ConsistencyLevel.ONE)
+            result = self.session.execute(statement)
             
             products = []
             for row in result:
@@ -147,7 +152,8 @@ class CassandraDB:
         """
         try:
             query = "SELECT * FROM products WHERE user_id = %s AND is_active = true ALLOW FILTERING"
-            result = self.session.execute(query, [user_id])
+            statement = SimpleStatement(query, consistency_level=ConsistencyLevel.ONE)
+            result = self.session.execute(statement, [user_id])
             
             products = []
             for row in result:
@@ -171,7 +177,8 @@ class CassandraDB:
         try:
             # Get all products with test IDs
             query = "SELECT product_id FROM products"
-            result = self.session.execute(query)
+            statement = SimpleStatement(query, consistency_level=ConsistencyLevel.ONE)
+            result = self.session.execute(statement)
             
             test_products = []
             for row in result:
@@ -181,7 +188,8 @@ class CassandraDB:
             # Delete each test product
             for product_id in test_products:
                 delete_query = "DELETE FROM products WHERE product_id = %s"
-                self.session.execute(delete_query, [product_id])
+                statement = SimpleStatement(delete_query, consistency_level=ConsistencyLevel.ONE)
+                self.session.execute(statement, [product_id])
             
             logger.info(f"Cleared {len(test_products)} test products from database")
             
@@ -209,7 +217,8 @@ class CassandraDB:
                 return False
 
             query = "UPDATE products SET is_active = false WHERE product_id = %s"
-            self.session.execute(query, [product_id])
+            statement = SimpleStatement(query, consistency_level=ConsistencyLevel.ONE)
+            self.session.execute(statement, [product_id])
             logger.info(f"Product {product_id} updated successfully")
             return True
             
@@ -259,7 +268,7 @@ class CassandraDB:
             "stock": stock,
             "origin": row.origin,
             "description": row.description,
-            "userId": row.user_id,
+            "user_id": row.user_id,
             "createdAt": format_date(row.created_at),
             "updatedAt": format_date(row.updated_at),
             "isActive": row.is_active,

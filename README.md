@@ -207,7 +207,7 @@ curl -X POST http://localhost:5000/products \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Papa Pastusa", 
-    "category": "vegetables", 
+    "category": "vegetales", 
     "price": 1200.0,
     "unit": "1kg",
     "imageUrl": "http://localhost:5000/static/catalog/papa.jpg",
